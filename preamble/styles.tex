@@ -1,0 +1,64 @@
+\definecolor{MRIaccent}{HTML}{254B63}
+\definecolor{MRIgray}{HTML}{505B62}
+\hypersetup{
+  pdftitle={MRI Physics: From Quantum Spin Dynamics to Advanced Acquisition and Reconstruction},
+  pdfauthor={},pdfsubject={Graduate MRI physics reference: architecture edition},
+  colorlinks=true,linkcolor=MRIaccent,citecolor=MRIaccent,urlcolor=MRIaccent,
+  bookmarksnumbered=true,linktoc=all
+}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\setlength{\parindent}{1.1em}
+\setlength{\parskip}{0pt plus .4pt}
+\setlength{\emergencystretch}{1em}
+\raggedbottom
+\setlist{nosep}
+\sisetup{per-mode=symbol,detect-all}
+\captionsetup{font=small,labelfont=bf,margin=8mm}
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{MRIaccent}}
+  {\normalfont\large\scshape\chaptertitlename\ \thechapter}{8pt}{}
+\titlespacing*{\chapter}{0pt}{8pt}{24pt}
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{.7em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{.7em}{}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\small\thepage}
+\fancyhead[RE]{\small\nouppercase{\leftmark}}
+\fancyhead[LO]{\small\nouppercase{\rightmark}}
+\renewcommand{\headrulewidth}{.3pt}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter\quad #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\quad #1}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\small\thepage}
+  \renewcommand{\headrulewidth}{0pt}}
+% Unboxed pedagogical environments; examples and results share one counter.
+\newtheoremstyle{mriprosemath}{8pt}{6pt}{\normalfont}{}{\bfseries}{.}{.5em}{}
+\theoremstyle{mriprosemath}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{physicalinterpretation}[definition]{Physical Interpretation}
+\newtheorem{derivation}[definition]{Derivation}
+\newtheorem{workedexample}[definition]{Worked Example}
+\newtheorem{importantresult}[definition]{Important Result}
+\newtheorem{commonmisconception}[definition]{Common Misconception}
+\newtheorem{clinicalconnection}[definition]{Clinical Connection}
+\newtheorem{researchnote}[definition]{Research Note}
+\newtheorem{challengeproblem}{Challenge Problem}[chapter]
+\crefname{definition}{definition}{definitions}
+\crefname{challengeproblem}{problem}{problems}
+\Crefname{challengeproblem}{Problem}{Problems}
+\newenvironment{solution}[1]
+  {\par\medskip\noindent\textbf{Solution to \Cref{#1}.}\ \ignorespaces}
+  {\par\medskip}
+% Figure vocabulary: RF/acquisition blue; gradients gray; annotations black.
+\tikzset{
+  mri axis/.style={-{Stealth[length=2mm]},thin},
+  mri rf/.style={MRIaccent,thick},
+  mri gradient/.style={MRIgray,thick},
+  mri signal/.style={MRIaccent,thick},
+  mri guide/.style={gray,densely dashed,thin},
+  mri label/.style={font=\small}
+}
+\pgfplotsset{every axis/.append style={
+  axis line style={thin},tick label style={font=\small},
+  label style={font=\small},legend style={font=\small,draw=none},
+  grid style={gray!20},width=.8\textwidth,height=.42\textwidth}}

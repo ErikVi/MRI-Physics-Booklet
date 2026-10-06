@@ -1,0 +1,53 @@
+% Scope: Connect nonuniform sampling to gridding and operator-based reconstruction; explain acceleration as a joint sampling and prior-design problem.
+% Status: architecture only; no chapter prose or completed problems yet.
+% Prerequisites: Chapters 5, 6 and 14; solver details in Chapter 16.
+% Planned worked examples: Radial sampling density, spiral off-resonance and adjoint checks.
+% Planned figures: Trajectories, interpolation kernels and undersampling PSFs.
+% Planned challenge problems: Design a trajectory under slew constraints; distinguish density compensation from inversion.
+\chapter{Non-Cartesian and Accelerated Imaging}
+\label{ch:15}
+
+\section{Radial and spiral acquisition}
+\label{sec:15:radial-and-spiral-acquisition}
+\subsection{Angular sampling and golden-angle ordering}
+\subsection{Spiral geometry and variable density}
+\subsection{Stack-of-stars and three-dimensional trajectories}
+
+\section{Nonuniform Fourier reconstruction}
+\label{sec:15:nonuniform-fourier-reconstruction}
+\subsection{Gridding kernels and oversampling}
+\subsection{Deapodization and density compensation}
+\subsection{NUFFT forward and adjoint operators}
+
+\section{Trajectory and field errors}
+\label{sec:15:trajectory-and-field-errors}
+\subsection{Gradient delays and measured trajectories}
+\subsection{Off-resonance blur and time segmentation}
+\subsection{Motion robustness and self-navigation limits}
+
+\section{Sampling for acceleration}
+\label{sec:15:sampling-for-acceleration}
+\subsection{Variable-density masks and incoherence}
+\subsection{Partial Fourier with complex phase}
+\subsection{Joint coil and sampling design}
+
+\section{Dynamic imaging}
+\label{sec:15:dynamic-imaging}
+\subsection{Temporal interleaving and view sharing}
+\subsection{Spatiotemporal undersampling and low-rank structure}
+\subsection{Temporal footprint versus nominal frame rate}
+
+\section{Worked examples}
+\label{sec:15:worked-examples}
+% Planned calculations: Radial sampling density, spiral off-resonance and adjoint checks.
+\subsection{Derivation and quantitative calculation}
+\subsection{Assumptions, limiting cases and scanner interpretation}
+
+\section{Challenge problems}
+\label{sec:15:challenge-problems}
+% Problem design: Design a trajectory under slew constraints; distinguish density compensation from inversion.
+% Use challengeproblem and stable labels prob:15:<topic>.
+% Complete solutions belong in Appendix E, section for this chapter.
+% Use \begin{solution}{prob:15:<topic>} ... \end{solution} there.
+\subsection{Derivation and quantitative design}
+\subsection{Model criticism and integrated reasoning}

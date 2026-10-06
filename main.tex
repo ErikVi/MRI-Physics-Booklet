@@ -1,0 +1,120 @@
+% !TeX program = pdflatex
+% !BIB program = biber
+\documentclass[a4paper,10pt,twoside,openany]{book}
+\input{preamble/packages}
+\input{preamble/macros}
+\input{preamble/styles}
+% For focused drafting, uncomment one or more files (no extension):
+% \includeonly{chapters/03_classical_magnetization_bloch}
+\begin{document}
+\frontmatter
+\begin{titlepage}
+\thispagestyle{empty}
+\vspace*{27mm}
+{\color{MRIaccent}\rule{\textwidth}{1.1pt}\par}
+\vspace{12mm}
+{\fontsize{38}{43}\selectfont\bfseries MRI Physics\par}
+\vspace{9mm}
+{\Large From Quantum Spin Dynamics to\par
+Advanced Acquisition and Reconstruction\par}
+\vfill
+{\small\scshape Graduate reference textbook\par}
+\vspace{3mm}
+{\small Architecture edition\par}
+\vspace{10mm}
+{\color{MRIaccent}\rule{\textwidth}{.4pt}\par}
+\end{titlepage}
+\chapter{Scope and Reading Structure}
+\label{front:scope}
+This project is an advanced reference for a reader with graduate training
+in applied and medical physics. Its organizing argument runs from spin
+dynamics to measurable signals, acquisition design and inference.
+Prerequisites are developed where they support that argument.
+
+This architecture edition contains the planned hierarchy, notation
+contract and source framework. Chapter headings describe intended
+coverage; they do not represent completed exposition. Worked examples,
+figures and difficult problems are planned in source comments. Complete
+challenge-problem solutions will be separated from questions in
+Appendix~\ref{app:e}. No chapter is assigned an artificial page budget.
+
+The default reading order is the printed chapter order. The EPG treatment
+in \cref{ch:13} supplies a second, computational reading of the echo trains
+introduced in \cref{ch:08} and the transient models in \cref{ch:12}.
+General estimation ideas start in \cref{ch:01}, become measurement models
+in \cref{ch:11}, and become reconstruction algorithms in \cref{ch:16}.
+This avoids requiring the entire inverse-problem chapter before the
+first quantitative experiment.
+
+\section*{Reference framework}
+The initial reference database anchors sequence design in
+Bernstein, King and Zhou \cite{bernstein2004} and spin dynamics in
+Levitt \cite{levitt2008}. Method-specific anchors are the
+Stejskal--Tanner diffusion experiment \cite{stejskal1965},
+SENSE \cite{pruessmann1999}, GRAPPA \cite{griswold2002},
+compressed-sensing MRI \cite{lustig2007}, magnetic resonance
+fingerprinting \cite{ma2013}, and the EPG review by
+Weigel \cite{weigel2015}. These are starting references for the
+planned treatments, not evidence that those treatments are already
+written. Additional primary sources will be added with the derivations
+and methods that actually require them.
+
+\tableofcontents
+\input{preamble/notation}
+\mainmatter
+
+\part{Mathematical Foundations and Spin Dynamics}
+\include{chapters/01_mathematical_physical_foundations}
+\include{chapters/02_quantum_spin_physics}
+\include{chapters/03_classical_magnetization_bloch}
+\include{chapters/04_rf_excitation_and_rotating_frame}
+
+\part{Encoding, Signal Formation and Pulse Sequences}
+\include{chapters/05_spatial_encoding_and_kspace}
+\include{chapters/06_signal_formation_and_fourier_imaging}
+\include{chapters/07_basic_pulse_sequences}
+\include{chapters/08_advanced_pulse_sequences}
+
+\part{Contrast, Quantification and Signal Pathways}
+\include{chapters/09_contrast_and_relaxation}
+\include{chapters/10_diffusion_mri}
+\include{chapters/11_quantitative_mri}
+\include{chapters/12_magnetic_resonance_fingerprinting}
+\include{chapters/13_epg_and_signal_pathways}
+
+\part{Accelerated Imaging and Reconstruction}
+\include{chapters/14_parallel_imaging}
+\include{chapters/15_noncartesian_and_accelerated_imaging}
+\include{chapters/16_reconstruction_and_inverse_problems}
+
+\part{Hardware, Sequence Design and Specialized Measurements}
+\include{chapters/17_mri_hardware}
+\include{chapters/18_rf_pulses_and_sequence_design}
+\include{chapters/19_flow_and_angiography}
+\include{chapters/20_spectroscopy}
+\include{chapters/21_functional_mri}
+
+\part{Artifacts, Protocols and Integrated Reasoning}
+\include{chapters/22_artifacts_and_corrections}
+\include{chapters/23_clinical_protocol_physics}
+\include{chapters/24_image_quality_and_optimization}
+\include{chapters/25_modern_mri_methods}
+\include{chapters/26_safety_and_system_limits}
+\include{chapters/27_integrated_worked_problems}
+
+\printbibliography[heading=bibintoc,title={References}]
+\appendix
+\include{appendices/A_mathematical_reference}
+\include{appendices/B_fourier_reference}
+\include{appendices/C_common_signal_equations}
+\include{appendices/D_constants_units_and_typical_values}
+\include{appendices/E_solutions}
+
+% Index infrastructure is active; expand entries as chapters are drafted.
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Index}
+\printindex
+% Keep the compact reference sheet at the end of the book.
+\include{appendices/F_cheatsheet}
+\end{document}

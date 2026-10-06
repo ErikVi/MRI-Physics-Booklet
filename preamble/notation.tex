@@ -1,0 +1,190 @@
+% This is front-matter content, deliberately input after \begin{document}.
+\chapter{Notation and Mathematical Conventions}
+\label{front:conventions}
+The definitions below form a contract for the manuscript, figures and
+numerical examples. They fix conventions rather than substitute for the
+derivations planned in \cref{ch:01,ch:02,ch:03,ch:04,ch:05,ch:06,ch:13}.
+SI units are used unless another unit is explicitly shown. Angles in
+exponentials are in radians. Spatial coordinates are right-handed scanner
+coordinates; patient orientation must be specified separately.
+
+\section*{Spin, precession and RF phase}
+For proton imaging, the gyromagnetic ratio is positive:
+$\gamma>0$ in $\si{\radian\per\second\per\tesla}$ and
+$\gammabar=\gamma/(2\pi)$ in $\si{\hertz\per\tesla}$.
+The static field is $\vect B_0=B_0\vect e_z$, with $B_0>0$, and
+$\omega_0=\gamma B_0$, $f_0=\gammabar B_0$ denote positive frequency
+magnitudes. The magnetic moment and Zeeman Hamiltonian are
+\begin{equation}
+ \op{\vect\mu}=\gamma\op{\vect S},\qquad
+ \op H=-\op{\vect\mu}\cdot\vect B,\qquad
+ \op S_j=\frac{\hbar}{2}\sigma_j .
+ \label{eq:convention:hamiltonian}
+\end{equation}
+Here $\sigma_j$ are Pauli matrices and $\hbar$ is the reduced Planck constant.
+We use $\dot{\vect M}=\gamma\vect M\times\vect B$ for torque-only evolution.
+Consequently $\Mplus=M_x+\ii M_y$ evolves as
+\begin{equation}
+ \Mplus(t)=\Mplus(0)\ee^{-\ii\omega_0t}
+ \quad\text{in a uniform static field without relaxation}.
+ \label{eq:convention:precession}
+\end{equation}
+Positive $\omega_0$ therefore does not mean a positive right-handed
+rotation angle about $+z$.
+
+The rotating-frame transverse variable is
+$\Mplus^{\mathrm{rot}}(t)=\ee^{+\ii\omega_{\mathrm{RF}}t}
+\Mplus^{\mathrm{lab}}(t)$, where $\omega_{\mathrm{RF}}>0$ is the RF carrier
+magnitude. Detuning is $\Delta\omega=\gamma B_z-\omega_{\mathrm{RF}}$;
+free rotating-frame evolution has factor $\ee^{-\ii\Delta\omega t}$.
+For a physical RF field written
+$\vect B_{\mathrm{RF}}(t)=\operatorname{Re}\{
+  \vect b(t)\ee^{-\ii\omega_{\mathrm{RF}}t}\}$,
+define its co-rotating component by
+\begin{equation}
+ \Btx(t)=\frac{b_x(t)+\ii b_y(t)}{2}.
+ \label{eq:convention:b1plus}
+\end{equation}
+The phasors $b_x,b_y$ and $\Btx$ have units of tesla. With this
+negative-time-exponential convention, a clockwise circular field has
+$b_y=-\ii b_x$ and $\Btx=b_x$. A linearly polarized peak field
+$B_{\mathrm{pk}}\cos(\omega_{\mathrm{RF}}t)\vect e_x$ has
+$\Btx=B_{\mathrm{pk}}/2$. The symbol $B_1$ alone must be qualified as
+a physical amplitude, phasor amplitude or co-rotating amplitude.
+
+Let $R_{\vect n}(\theta)$ denote an active right-handed rotation.
+An on-resonance hard pulse with constant phase
+$\phi=\arg\Btx$, negligible relaxation and flip magnitude
+$\alpha=\gamma\int\abs{\Btx(t)}\dd t$ acts as
+$R_{\vect n}(-\alpha)$, with
+$\vect n=(\cos\phi,\sin\phi,0)$.
+Thus a positive $90^\circ$ pulse about $+x$ sends $+z$ to $+y$.
+The corresponding spin propagator is
+$U=\exp(+\ii\alpha\,\vect n\cdot\vect\sigma/2)$.
+This integral flip-angle rule is not asserted for arbitrary phase
+modulation or detuning.
+
+\section*{Fourier transforms, reception and encoding}
+The continuous spatial transform and its inverse are
+\begin{align}
+ \widetilde f(\vect k)
+ &=\int_{\mathbb R^d}f(\vect r)
+       \ee^{-\ii2\pi\vect k\cdot\vect r}\dd^d\vect r,
+ \label{eq:convention:fourier-forward}\\
+ f(\vect r)
+ &=\int_{\mathbb R^d}\widetilde f(\vect k)
+       \ee^{+\ii2\pi\vect k\cdot\vect r}\dd^d\vect k.
+ \label{eq:convention:fourier-inverse}
+\end{align}
+Here $\vect r$ is in metres and $\vect k$ is in cycles per metre.
+The same negative sign defines the temporal transform
+$\widetilde s(f)=\int s(t)\ee^{-\ii2\pi ft}\dd t$.
+A freely precessing component $\ee^{-\ii2\pi\Delta f t}$ therefore
+appears at transform coordinate $f=-\Delta f$; a displayed spectroscopic
+axis increasing with physical resonance offset must explicitly reverse
+that coordinate. The normalized sinc is
+$\sinc u=\sin(\pi u)/(\pi u)$.
+
+For an interval without RF refocusing and with
+$B_z(\vect r,t)=B_0+\vect G(t)\cdot\vect r$,
+\begin{equation}
+ \vect k(t)=\vect k(t_0)+\gammabar\int_{t_0}^{t}\vect G(\tau)\dd\tau .
+ \label{eq:convention:kspace}
+\end{equation}
+$\vect G$ is in $\si{\tesla\per\metre}$, while
+$\dot{\vect G}$ is in $\si{\tesla\per\metre\per\second}$.
+Across RF refocusing, transverse conjugation and RF phase must be
+propagated explicitly; a toggling-frame gradient integral is valid only
+for the stated coherence pathway.
+
+Receiver phase is chosen so that the demodulated signal is linear in
+$\Mplus^{\mathrm{rot}}$. Define $c_c(\vect r)$ as the complex receive
+weight multiplying this variable for coil $c$; any conjugation in a
+reciprocity-field convention is absorbed in this definition.
+Under stationary, linear-gradient, time-independent-object and
+negligible-intrareadout-decay assumptions, the signal reduces to
+\begin{equation}
+ s_c(t)=\int c_c(\vect r)\,m(\vect r)
+       \ee^{-\ii2\pi\vect k(t)\cdot\vect r}\dd^3\vect r .
+ \label{eq:convention:ideal-signal}
+\end{equation}
+$m$ is the prepared complex transverse magnetization density, with
+fixed receiver scaling absorbed into $c_c$. It is not automatically
+proton density. Off-resonance, relaxation, motion and chemical species
+require the more general model planned in \cref{ch:06}.
+
+The one-dimensional DFT uses
+$X_p=\sum_{n=0}^{N-1}x_n\ee^{-\ii2\pi pn/N}$ and
+$x_n=N^{-1}\sum_{p=0}^{N-1}X_p\ee^{+\ii2\pi pn/N}$.
+Multidimensional inverse normalization is the product of dimension
+lengths. A unitary DFT must be marked explicitly. Shifting the array
+origin changes indexing, not transform signs. For uniform Cartesian
+sampling, $\FOV=1/\Delta k$ and the nominal grid spacing is
+$\Delta x=\FOV/N$; effective resolution depends on the acquired support,
+weighting, motion and reconstruction.
+
+\section*{EPG state and noise conventions}
+For a dimensionless spatial phase coordinate $\psi\in[0,2\pi)$,
+define signed-order EPG coefficients by
+\begin{equation}
+ F_n^\pm=\frac{1}{2\pi}\int_0^{2\pi}M_\pm(\psi)
+             \ee^{-\ii n\psi}\dd\psi,\qquad
+ Z_n=\frac{1}{2\pi}\int_0^{2\pi}M_z(\psi)
+             \ee^{-\ii n\psi}\dd\psi ,
+ \label{eq:convention:epg}
+\end{equation}
+where $M_-=M_x-\ii M_y$, $n\in\mathbb Z$,
+$F_n^-=(F_{-n}^+)^*$ and $Z_{-n}=Z_n^*$.
+The observable uniform-voxel transverse average is $F_0^+$.
+A gradient phase $\Mplus\mapsto\Mplus\ee^{-\ii q\psi}$ with
+integer $q$ implies
+$F_n^+\mapsto F_{n+q}^+$ and $F_n^-\mapsto F_{n-q}^-$,
+where the right-hand sides are pre-gradient states.
+An implementation using only nonnegative orders must state how it
+folds conjugate states. RF matrices in \cref{ch:13} must follow the
+rotation sign above, not be copied without translation.
+
+Proper complex Gaussian noise is denoted
+$\vect n\sim\mathcal{CN}(0,\mat\Psi)$ with
+$\mat\Psi=\E[\vect n\vect n\adj]$ and
+$\E[\vect n\vect n^{\mathsf T}]=0$.
+For one channel with independent real and imaginary variance $\sigma^2$,
+$\E[\abs n^2]=2\sigma^2$. This distinction must accompany SNR and
+likelihood formulas.
+
+\section*{Notation register}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{.19\textwidth}p{.51\textwidth}p{.23\textwidth}@{}}
+\toprule Symbol & Meaning & Unit or convention\\ \midrule
+\endfirsthead
+\toprule Symbol & Meaning & Unit or convention\\ \midrule
+\endhead
+$\vect r,\vect k$ & Position; spatial frequency & m; cycles/m\\
+$t,\omega,f$ & Time; angular frequency; frequency & s; rad/s; Hz\\
+$\gamma,\gammabar$ & Angular and cyclic gyromagnetic ratios & rad/(s\,T); Hz/T\\
+$\vect B,\Btx$ & Magnetic flux density; co-rotating RF phasor & T\\
+$\vect G,\dot{\vect G}$ & Gradient strength; slew rate & T/m; T/(m\,s)\\
+$\vect M,M_0$ & Magnetization; equilibrium magnitude & A/m\\
+$\rho_s$ & Spin number density & $\si{\per\cubic\metre}$\\
+$\op\rho$ & Density operator, distinct from spin density & Trace one\\
+$T_1,T_2,\TtwoStar$ & Longitudinal, transverse, effective decay times & s\\
+$R_1,R_2,\RtwoStar$ & Corresponding inverse times & $\si{\per\second}$\\
+$\alpha,\phi$ & RF flip magnitude and phase & rad\\
+$\TR,\TE,\TI$ & Repetition, echo and inversion times & s\\
+$c_c,s_c$ & Receive weight and complex signal, coil $c$ & Calibration-dependent\\
+$\mat A,\mat A\adj$ & Encoding matrix and its Hermitian adjoint & Model-dependent\\
+$\mat\Psi,\sigma^2$ & Complex covariance; real-channel variance & Signal units squared\\
+$D,\mat D$ & Diffusivity; diffusion tensor & $\si{\square\metre\per\second}$\\
+$b,\mat B_b$ & Diffusion weighting and b-matrix & $\si{\second\per\square\metre}$\\
+$\vect q$ & Angular diffusion wavevector & rad/m; not $\vect k$\\
+$\mathcal M_j$ & Gradient moment of order $j$ & $\mathrm{T\,s^{j+1}/m}$\\
+$R,g$ & Acceleration factor and geometry factor & Dimensionless\\
+$\vect\theta$ & Estimated parameter vector & Component-dependent\\
+$\chi,\delta$ & Susceptibility; chemical shift & Dimensionless; ppm if stated\\
+\bottomrule
+\end{longtable}
+\renewcommand{\arraystretch}{1}
+\index{Fourier transform!convention}
+\index{gyromagnetic ratio}
+\index{rotating frame}
+\index{extended phase graph!convention}
