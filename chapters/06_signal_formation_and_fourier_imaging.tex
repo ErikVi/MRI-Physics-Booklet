@@ -1,59 +1,253 @@
-% Scope: Derive reception and the MRI forward model, then identify exactly when Fourier inversion is justified; establish PSF and complex-noise language.
-% Status: architecture only; no chapter prose or completed problems yet.
+% Scope: Derive reception, the forward operator, Fourier inversion, point-spread functions and complex noise.
+% Status: completed foundational chapter.
 % Prerequisites: Chapters 1 through 5.
-% Planned worked examples: Two-point object, finite readout blur and noise through a DFT.
-% Planned figures: Receive sensitivity, Fourier pairs and point-spread functions.
-% Planned challenge problems: Derive the forward operator for a decaying readout; compare sampling and resolution.
+% Planned figures: Fourier pairs and aperture point-spread functions (implemented).
+% Planned challenge problems: Voxel integration, noise, partial Fourier and off-resonance (implemented).
 \chapter{Signal Formation and Fourier Imaging}
 \label{ch:06}
-
 \section{From precession to received voltage}
 \label{sec:06:from-precession-to-received-voltage}
 \subsection{Faraday induction and reciprocity}
+A transverse magnetic moment produces time-dependent magnetic flux through a receiver. For a stationary coil, Faraday's law gives \(v=-\dd\Phi/\dd t\). Reciprocity provides an efficient way to calculate that flux without computing the field from every spin separately. Let \(\vect b_c(\vect r)\) be the magnetic field per unit current that the receive coil would generate at \(\vect r\), with its port orientation fixed. In a reciprocal quasistatic model the linked flux due to a magnetization distribution is
+\begin{equation}
+ \Phi_c(t)=\int \vect b_c(\vect r)\cdot\vect M(\vect r,t)\,\dd^3r.
+ \label{eq:06:flux}
+\end{equation}
+The units are \((\mathrm T/\mathrm A)(\mathrm A/\mathrm m)\mathrm m^3=\mathrm{Wb}\).
+This result can be obtained by interchanging source and test currents in the mutual-inductance energy: the interaction of a small magnetic dipole with the test field equals the test current times the flux linked by that dipole. Integrating the dipoles gives \cref{eq:06:flux}. At high frequency, a full electromagnetic reciprocity calculation replaces the quasistatic test field; tissue loading and port normalization must be included \cite{hoult1976}.
+
+For a slowly modulated positive-proton precession, \(M_x=\Re\{m\ee^{-\ii\omega_0t}\}\) and \(M_y=\Re\{-\ii m\ee^{-\ii\omega_0t}\}\). For real test-field components the transverse flux is therefore
+\[
+ \Phi_c(t)=\Re\left\{\ee^{-\ii\omega_0t}
+ \int (b_{cx}-\ii b_{cy})m(\vect r,t)\,\dd^3r\right\}.
+\]
+Differentiation supplies a factor \(+\ii\omega_0\) to the slowly varying complex amplitude, with a smaller envelope-derivative term. This explains both the frequency dependence of induced voltage and the circular receive weighting. It does not mean that an arbitrary coil has uniform sensitivity.
+
 \subsection{Complex demodulation and receiver phase}
+For a voltage \(\Re\{V(t)\ee^{-\ii\omega_{\mathrm{RF}}t}\}\), ideal mixing with \(2\ee^{+\ii\omega_{\mathrm{RF}}t}\) followed by low-pass filtering retains \(V(t)\); the component near \(2\omega_{\mathrm{RF}}\) is rejected. This definition fixes the sign of the reconstructed complex signal. An electronic receiver can exchange quadratures or conjugate its reported data, so the experimental convention must be calibrated.
+An extra reference phase \(\phi_R\) changes the reported envelope to
+\(\ee^{-\ii\phi_R}V(t)\). Receiver gain, the induction factor, filtering and this constant phase can be included in a sensitivity coefficient. Absolute phase is consequently meaningful only relative to specified transmitter, receiver and spatial conventions.
+
 \subsection{Receive sensitivity and signal normalization}
+We define \(c_c(\vect r)\) to be the effective complex receive weighting of channel \(c\), after these choices. It includes any conjugation required by the chosen reciprocity convention. Throughout this book,
+\begin{equation}
+ s_c=\int c_c(\vect r)m(\vect r)\,\dd^3r
+ \label{eq:06:receive}
+\end{equation}
+has no additional implicit conjugation. A sensitivity map from software that uses \(c_c^*\) in its signal equation must therefore be converted before substitution. If \(m\) is in \(\si{\ampere\per\metre}\) and \(s\) in volts, \(c_c\) carries the necessary physical units. Alternatively, calibrated arbitrary signal units can be used, provided discretization volume and gain are stated. Image intensity cannot be interpreted as spin density merely because a Fourier transform was applied.
 
 \section{The MRI signal equation}
 \label{sec:06:the-mri-signal-equation}
 \subsection{Spatial integration of transverse magnetization}
+Independent volume elements contribute coherently as complex amplitudes before magnitude is taken. For one stationary species after the last RF pulse, let \(m_0(\vect r)=M_+(\vect r,t_0)\) in the rotating frame. Combining Bloch evolution with reception gives
+\begin{equation}
+ s_c(t)=\int c_c(\vect r)m_0(\vect r)
+ \exp\left[-\int_{t_0}^t R_2(\vect r,u)\,\dd u\right]
+ \exp\left[-\ii\int_{t_0}^t\Delta\omega(\vect r,u)\,\dd u\right]
+ \ee^{-\ii2\pi\vect k(t)\cdot\vect r}\,\dd^3r+n_c(t).
+ \label{eq:06:signal}
+\end{equation}
+Initial spatial phase can be included in \(m_0\) or in the initial trajectory value, but not in both. Here \(\Delta\omega\) excludes the linear encoding gradient already represented by \(\vect k\).
+For time-independent coefficients, the two exponentials become
+\(\ee^{-(t-t_0)/T_2(\vect r)}\ee^{-\ii\Delta\omega(\vect r)(t-t_0)}\).
+An unresolved distribution of offsets within a nominal voxel can cause additional dephasing; replacing it by a single offset discards that information.
+
 \subsection{Encoding, relaxation and off-resonance during readout}
+Equation~\eqref{eq:06:signal} is linear in \(m_0\) for fixed fields, relaxation and receive weights. It is generally not a Fourier transform of a time-independent object. Define
+\[
+ (\mathcal A m)_c(t)=\int a_c(t,\vect r)m(\vect r)\,\dd^3r,
+\]
+where \(a_c\) is the entire encoding kernel. The adjoint integrates conjugated kernels against data:
+\[
+ (\mathcal A^\dagger y)(\vect r)
+ =\sum_c\int a_c(t,\vect r)^*y_c(t)\,\dd t
+\]
+for unweighted Lebesgue inner products. Noise-weighted and quadrature-weighted discretizations change the corresponding adjoint. The normal operator has kernel
+\[
+ K(\vect r,\vect u)=\sum_c\int a_c(t,\vect r)^*a_c(t,\vect u)\,\dd t.
+\]
+Its dependence on both positions shows why a general adjoint image is neither an inverse nor necessarily a shift-invariant convolution. The finite-dimensional distinction established in \cref{ch:01} thus follows directly from the physical signal model.
+
 \subsection{Motion, multiple species and model limitations}
+For several noninteracting species, sum \cref{eq:06:signal} over species \(a\), with their own \(m_{0a}\), rates and offsets. Fat and water can interfere destructively even when neither has decayed strongly. Exchange requires coupled evolution rather than separate scalar factors.
+For motion, label material points by their initial position \(\vect R\) and trajectory \(\vect r(\vect R,t)\). The phase becomes
+\[
+ -\gamma\int_{t_0}^t\vect G(u)\cdot\vect r(\vect R,u)\,\dd u,
+\]
+and reception uses \(c_c(\vect r(\vect R,t))\). If \(m_0(\vect R)\dd^3R\) describes the transported magnetic moment and no spins enter or leave that material population, integration over \(\vect R\) conserves it. An Eulerian density instead carries the appropriate deformation Jacobian. Rigid motion is a special volume-preserving case. Diffusion requires an ensemble average over paths, and RF during acquisition requires the full driven evolution. These limitations identify which later reconstruction models need more than a Fourier kernel.
 
 \section{The Fourier imaging limit}
 \label{sec:06:the-fourier-imaging-limit}
 \subsection{Stationary object and time-independent weighting}
+If motion is negligible, the trajectory is known and linear, and relaxation and off-resonance during the window are negligible or corrected, set \(f_c(\vect r)=c_c(\vect r)m_0(\vect r)\). Then
+\begin{equation}
+ s_c(\vect k)=\int_{\mathbb R^d}f_c(\vect r)
+             \ee^{-\ii2\pi\vect k\cdot\vect r}\,\dd^dr.
+ \label{eq:06:fourier}
+\end{equation}
+Decay before a common reference time remains part of \(m_0\); neglecting variation during a short window does not remove the sequence's contrast. A two-dimensional slice model may already have integrated over the third coordinate as described in \cref{ch:05}.
+
 \subsection{Forward and inverse transform conventions}
+For integrable transforms, inversion is
+\[
+ f_c(\vect r)=\int s_c(\vect k)\ee^{+\ii2\pi\vect k\cdot\vect r}\,\dd^dk.
+\]
+For finite-energy functions the same statement holds in the \(L^2\) sense. The opposite signs are required; using the same sign twice reflects the image. No \(2\pi\) prefactor appears because spatial frequency is in cycles per unit length. Parseval's relation then equates
+\(\int|f|^2\dd^dr\) and \(\int|s|^2\dd^dk\), with units matched by the transform's length factor. These are continuous relations; replacing the integrals by sums requires explicit quadrature factors.
+
 \subsection{Discrete sampling and voxel integration}
+Suppose \(m(\vect r)=\sum_n x_n\varphi_n(\vect r)\). The exact discrete forward matrix for this basis is
+\begin{equation}
+ A_{jn}=\int c(\vect r)\varphi_n(\vect r)
+               \ee^{-\ii2\pi\vect k_j\cdot\vect r}\,\dd^dr,
+ \qquad \vect s=\mat A\vect x+\vect n.
+ \label{eq:06:basis}
+\end{equation}
+With a constant sensitivity on a rectangular voxel centered at \(\vect r_n\), and \(\varphi_n\) equal to one inside it,
+\begin{equation}
+ A_{jn}=c_n\Delta V\,\ee^{-\ii2\pi\vect k_j\cdot\vect r_n}
+          \prod_{\ell=1}^d\sinc(k_{j\ell}\Delta r_\ell).
+ \label{eq:06:voxel}
+\end{equation}
+Here \(\sinc u=\sin(\pi u)/(\pi u)\). A point-quadrature model drops the sinc factors and gives \(\vect s\simeq\Delta V\,\mat F\diag(\vect c)\vect x\) on a Cartesian grid. This is a different basis or approximation, not an exact identity for piecewise constant voxels. At the grid Nyquist frequency, \(\sinc(1/2)=2/\pi\), so the difference need not be small. Reconstruction code must state what its unknowns represent.
 
 \section{Image formation and point-spread functions}
 \label{sec:06:image-formation-and-point-spread-functions}
 \subsection{Finite support and truncation}
+With a one-dimensional measured aperture \(|k|\leq K\), direct inversion gives
+\begin{align}
+ \hat f(x)&=\int_{-K}^K F(k)\ee^{\ii2\pi kx}\,\dd k
+          =(f*h_K)(x),\\
+ h_K(x)&=\frac{\sin(2\pi Kx)}{\pi x}=2K\sinc(2Kx).
+ \label{eq:06:psf}
+\end{align}
+The convolution follows by exchanging the two integrals. The first zero is at \(1/(2K)\), while the response has infinite oscillatory tails. A sharp step therefore exhibits ringing. Sampling adds periodic repetition to this truncation effect.
+
+For \(N\) even, equally weighted samples \(n=-N/2,\ldots,N/2-1\) with interval \(1/L\), the periodic kernel is the geometric sum
+\begin{equation}
+ h_N(x)=\frac1L\sum_n\ee^{\ii2\pi nx/L}
+ =\frac{\ee^{-\ii\pi x/L}}{L}\frac{\sin(\pi Nx/L)}{\sin(\pi x/L)}.
+ \label{eq:06:dirichlet}
+\end{equation}
+The removable singularities are evaluated by limits. The phase factor records the asymmetric endpoint convention. At the reconstruction grid, this kernel produces exact discrete interpolation; between grid points its complex phase cannot be silently discarded.
+
 \subsection{Apodization, convolution and effective resolution}
+Multiplying data by a window \(w(k)\) replaces \(h_K\) with the inverse transform of the weighted aperture. Smooth tapering suppresses sidelobes while widening the main lobe. If uniform decay produces a known multiplier \(a(t(k))\), it too acts as a window, generally complex and asymmetric when combined with off-resonance. Dividing by small values to undo it amplifies noise. Spatially varying rates destroy this common-window model and yield a position-dependent response.
+For a constant readout \(k=\gammabar G(t-t_c)\), uniform frequency offset contributes
+\(\ee^{-\ii2\pi k\Delta f/(\gammabar G)}\) up to a constant phase. Thus the apparent displacement is \(+\Delta f/(\gammabar G)\). This derivation fixes the sign without an appeal to a scanner display convention.
+
+\begin{figure}[tb]
+\centering
+\input{figures/tikz/06_psf}
+\caption{A rectangular aperture produces sinc sidelobes; a triangular aperture produces a broader squared-sinc response. Both responses are normalized to unity at the origin for shape comparison, so their areas need not match under this plotting normalization.}
+\label{fig:06:psf}
+\end{figure}
+
 \subsection{Center and periphery without oversimplification}
+The origin measures the integral of the complex receive-weighted object; nearby samples constrain slowly varying components. Peripheral samples constrain faster spatial variation. However, a localized object contributes across the spectrum, and its contrast depends on all acquired data and their phases. The common statement that the center contains contrast and the edge contains detail is at most a qualitative mnemonic. It cannot predict tissue-specific transient weighting, phase cancellation, or a nonlinear reconstruction's behavior. A frequency decomposition and its forward model provide the precise statement.
 
 \section{Incomplete and modified Fourier data}
 \label{sec:06:incomplete-and-modified-fourier-data}
 \subsection{Partial Fourier and conjugate-symmetry assumptions}
+For real \(f\), complex conjugation of its Fourier integral gives
+\(F(-k)=F(k)^*\). MRI objects are generally complex because of RF phase, coil sensitivity, off-resonance and motion. If \(f(x)=a(x)\ee^{\ii\phi(x)}\), with real \(a\), the demodulated object is real only when \(\phi\) is correctly known. One cannot infer an arbitrary missing half of complex Fourier space from the measured half: the omitted complex coefficients contain independent degrees of freedom.
+
 \subsection{Phase estimation and homodyne concepts}
+A symmetric low-frequency region can provide a low-resolution phase estimate \(\hat\phi(x)\). A simplified homodyne construction forms a weighted inverse transform, multiplies by \(\ee^{-\ii\hat\phi}\), and takes the real part. For exactly real data-generating objects, a real weight satisfying
+\[
+ w(k)+w(-k)=2
+\]
+on the target symmetric aperture yields the same real reconstruction as the complete aperture: pair each term with its conjugate and take the real part. In practice this identity must be applied after the correct phase treatment; spatial multiplication by a varying phase does not commute with truncation in \(k\)-space. Rapid phase variation, phase singularities, low signal and a too-small central region can invalidate the approximation. Iterative partial-Fourier methods enforce the phase and data constraints explicitly, but still depend on the phase model.
+
 \subsection{Zero padding, interpolation and display grids}
+If \(x_m=N^{-1}\sum_n S_n\ee^{\ii2\pi nm/N}\), the same trigonometric polynomial on \(N'>N\) points is
+\(N^{-1}\sum_n S_n\ee^{\ii2\pi nm/N'}\).
+A library inverse FFT of a zero-padded array instead divides by \(N'\); multiplying its output by \(N'/N\) preserves amplitude in this normalization. Frequencies must be inserted with correct signed indexing, including the chosen Nyquist convention. The additional displayed pixels are correlated evaluations of the same random polynomial, not new independent measurements.
 
 \section{Complex images and noise}
 \label{sec:06:complex-images-and-noise}
 \subsection{DFT normalization and covariance}
+Let \(\mat F^\dagger\mat F=N\mat I\), let
+\(\vect x=N^{-1}\mat F^\dagger\vect s\), and assume proper complex k-space noise with covariance \(\mat\Psi_k=2\sigma_k^2\mat I\). Then
+\begin{equation}
+ \mat\Psi_x=\frac{1}{N^2}\mat F^\dagger\mat\Psi_k\mat F
+           =\frac{2\sigma_k^2}{N}\mat I.
+ \label{eq:06:noise}
+\end{equation}
+The standard deviation of each real or imaginary component is \(\sigma_k/\sqrt N\). If the forward model contains a voxel volume \(\Delta V\), inversion for physical density introduces another \(1/\Delta V\); the noise units and scaling follow it. With window matrix \(\mat W\), covariance becomes
+\(N^{-2}\mat F^\dagger\mat W\mat\Psi_k\mat W^\dagger\mat F\).
+Even initially independent samples then produce spatially correlated image noise. Noise bandwidth from receiver filtering may already correlate the input samples.
+
 \subsection{Phase images, magnitude images and noise floors}
+For one complex pixel \(z=A\ee^{\ii\phi}+n_R+\ii n_I\), rotate by the true phase. At high SNR, first-order expansion gives
+\(\delta |z|\simeq n_R\) and \(\delta\arg z\simeq n_I/A\), so phase variance is \(\sigma^2/A^2\). At low SNR phase wraps and this linearization fails.
+Magnitude has the Rician density derived in \cref{ch:01}; at \(A=0\) it becomes Rayleigh with mean \(\sigma\sqrt{\pi/2}\), strictly positive despite zero true signal \cite{gudbjartsson1995}. A magnitude-domain least-squares fit with zero-mean Gaussian errors can therefore be biased. The correct distribution also changes after nonlinear coil combination or correlated reconstruction.
+
 \subsection{Receive weighting and the meaning of image intensity}
+At a location, let the coil vector satisfy \(\vect z=\vect c\,m+\vect n\), with covariance \(\mat\Psi\). Minimizing
+\((\vect z-\vect c m)^\dagger\mat\Psi^{-1}(\vect z-\vect c m)\) with respect to the real and imaginary parts of \(m\) gives
+\begin{equation}
+ \hat m=\frac{\vect c^\dagger\mat\Psi^{-1}\vect z}
+              {\vect c^\dagger\mat\Psi^{-1}\vect c},
+ \qquad
+ \E|\hat m-m|^2=\frac{1}{\vect c^\dagger\mat\Psi^{-1}\vect c}.
+ \label{eq:06:combine}
+\end{equation}
+This is the same weighted projection developed in \cref{ch:01}.
+Sensitivity and object have a gauge freedom:
+\(\vect c\mapsto a(\vect r)\vect c,\ m\mapsto m/a(\vect r)\)
+for any nonzero complex \(a\). Calibration or a normalization convention fixes the gauge; the raw data alone do not. Accordingly, proton-density inference needs correction for sequence weighting, transmit field, receive normalization and other relevant effects in addition to Fourier inversion.
 
 \section{Worked examples}
 \label{sec:06:worked-examples}
-% Planned calculations: Two-point object, finite readout blur and noise through a DFT.
 \subsection{Derivation and quantitative calculation}
+\begin{workedexample}[Two point objects]
+For \(f(x)=a\delta(x-d/2)+a\delta(x+d/2)\),
+\(F(k)=2a\cos(\pi kd)\). With \(d=\SI{4}{\milli\metre}\), the first positive spectral zero is \(\SI{125}{\per\metre}\).
+A truncated reconstruction is
+\(a h_K(x-d/2)+a h_K(x+d/2)\); whether two peaks can be distinguished depends on \(K\), weighting and noise, not on zero filling. The spectral zero is an interference effect and does not imply that either point emits no signal.
+\end{workedexample}
+\begin{workedexample}[Noise under a normalized inverse FFT]
+For \(N=256\) independent complex samples with quadrature standard deviation \(\sigma_k=8\) arbitrary units, the image quadrature deviation is \(0.5\).
+A signal-free magnitude pixel therefore has mean \(0.6267\), not zero.
+An image amplitude of \(10\) has high-SNR phase deviation approximately \(0.05\) rad, or \(2.86^\circ\).
+These numbers use the \(1/N\) inverse-transform normalization and omit any subsequent density calibration.
+\end{workedexample}
+
 \subsection{Assumptions, limiting cases and scanner interpretation}
+\begin{workedexample}[Frequency offset and bandwidth per pixel]
+With bandwidth \(\SI{500}{\hertz}\) per pixel and a uniform offset of \(\SI{220}{\hertz}\), the displacement is \(0.44\) pixels along a positive frequency-encoding direction.
+This follows because one pixel changes the encoded frequency by exactly the pixel bandwidth.
+Increasing the bandwidth reduces this displacement at fixed pixel size, but changes gradient requirements and received noise. A spatially varying offset can stretch or compress the image rather than merely translating it.
+\end{workedexample}
 
 \section{Challenge problems}
 \label{sec:06:challenge-problems}
-% Problem design: Derive the forward operator for a decaying readout; compare sampling and resolution.
-% Use challengeproblem and stable labels prob:06:<topic>.
-% Complete solutions belong in Appendix E, section for this chapter.
-% Use \begin{solution}{prob:06:<topic>} ... \end{solution} there.
 \subsection{Derivation and quantitative design}
+\begin{challengeproblem}[Reciprocity and calibration]\label{prob:06:receive}
+Starting from \cref{eq:06:flux}, derive the complex voltage for an envelope \(m(t)\) without dropping its derivative.
+Find the relative size of the correction when the envelope varies on time scale \(T_e\).
+Explain why Fourier inversion of one coil cannot uniquely separate sensitivity from magnetization.
+\end{challengeproblem}
+\begin{challengeproblem}[Voxel basis versus point quadrature]\label{prob:06:voxel}
+Derive \cref{eq:06:voxel} by integrating a constant one-dimensional voxel.
+At the grid Nyquist frequency quantify the discrepancy relative to a point model.
+If one divides out the exact voxel factor, by what factor does the quadrature noise standard deviation increase there? Distinguish this operation from recovering unmeasured frequencies.
+\end{challengeproblem}
+\begin{challengeproblem}[Windowed Fourier noise]\label{prob:06:window}
+For \(N>4\) uniformly sampled frequencies indexed modulo \(N\), use the periodic Hann weights
+\(w_j=[1-\cos(2\pi j/N)]/2\).
+Find image covariance as a function of pixel separation, its diagonal, and the standard-deviation change after normalizing the point-response peak to that of the unwindowed reconstruction.
+Derive the covariance using the Fourier coefficients of \(w_j^2\), rather than assuming pixels remain independent.
+\end{challengeproblem}
 \subsection{Model criticism and integrated reasoning}
+\begin{challengeproblem}[Failure of conjugate completion]\label{prob:06:partial}
+Let \(f(x)=a(x)\ee^{\ii2\pi k_0x}\), where \(a\) is real.
+Derive its Fourier transform and show why reflection about \(k=0\) is generally not the correct conjugate symmetry.
+Construct two complex periodic objects with identical measured nonnegative Fourier coefficients but different unmeasured negative coefficients. What additional information would make completion possible?
+\end{challengeproblem}
+\begin{challengeproblem}[Off-resonance as geometric distortion]\label{prob:06:distort}
+For a constant positive readout gradient \(G\), take \(t=k/(\gammabar G)\) and a linear off-resonance \(\Delta f(x)=ax\), absorbing reference-time phase into \(f\).
+Derive the ideally reconstructed function, its displacement and intensity scaling.
+What happens if \(1+a/(\gammabar G)\) is negative or zero? Explain why an intensity-preserving image warp must account for the Jacobian.
+\end{challengeproblem}

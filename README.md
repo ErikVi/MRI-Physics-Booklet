@@ -7,11 +7,16 @@ proficiency, research preparation and graduate-level interview study.
 
 ## Current milestone
 
-This is the **initial architecture**, not a completed textbook. It contains
-27 modular chapter files, six appendices, a detailed subsection hierarchy,
-central notation and sign conventions, a small verified bibliography, and
-build tooling. There are no filler chapter paragraphs, completed chapter
-derivations, fabricated results or pretend implementations.
+The **foundational block (Chapters 1–6)** is complete: mathematical and
+physical foundations, quantum spin physics, Bloch dynamics, RF and rotating
+frames, spatial encoding, and signal formation/Fourier imaging. It includes
+major derivations, numerical examples, seven native vector figures, and
+30 challenge problems with worked solutions in Appendix E.
+
+Chapters 7–27 and the remaining reference appendices still contain the
+planned architecture. They are not presented as completed chapters.
+See [the foundational review](docs/FOUNDATIONS_REVIEW.md) for verification
+scope and reproducible checks.
 
 The requested chapter order is retained. Six parts group the material:
 
@@ -37,13 +42,17 @@ database uses standard BibTeX entry syntax.
 
 On Debian/Ubuntu, the dependencies are:
 
-    sudo apt-get install latexmk biber texlive-latex-extra texlive-fonts-recommended texlive-science
+    sudo apt-get install latexmk biber texlive-latex-extra texlive-fonts-recommended texlive-science python3-numpy
 
 Build and check:
 
     python scripts/check_structure.py
+    python scripts/check_foundations.py
     latexmk -pdf main.tex
     python scripts/check_build.py
+
+The foundational numerical checks require NumPy (1.26 or newer); the structural
+and build checks use only the Python standard library.
 
 Use python3 if that is your platform's Python command. latexmkrc places all
 outputs in build/, runs the required bibliography/index tools, and repeats
@@ -83,10 +92,10 @@ main.tex and pdfLaTeX, and use its full TeX Live environment.
 | preamble/notation.tex | Typeset notation register and mathematical conventions |
 | chapters/ | 27 separately editable chapters |
 | appendices/ | Mathematical, Fourier, signal, constants, solution and reference-sheet appendices |
-| bibliography/ | Verified seed references and source ledger |
+| bibliography/ | Verified references and source ledger |
 | figures/tikz/, figures/generated/ | Editable diagrams and generated vector output |
 | code/ | Reserved numerical demonstration modules |
-| scripts/ | Structural and build-diagnostic checks |
+| scripts/ | Structural, numerical and build-diagnostic checks |
 | docs/ | Reviewable outline and editorial standards |
 | .github/workflows/latex.yml | Automated full-project compilation |
 | build/ | Ignored PDF and auxiliary output |
@@ -107,10 +116,11 @@ The source files themselves own the hierarchy. Update docs/OUTLINE.md when
 editing headings. During focused drafting, use the documented includeonly
 example in main.tex; always build the complete book before a release.
 
-Planned examples and problem types are comments, not substantive chapter prose.
-Solutions will be written in Appendix E when their problems are authored.
-Numerical directories are reserved with .gitkeep files; no simulations are
-claimed in this milestone. The seed references are intentionally selective.
+For the unfinished chapters, planned examples and problem types remain source
+comments. Chapters 1–6 contain the actual exposition and problems; their
+solutions are in Appendix E. The executable foundational checks are in
+scripts/check_foundations.py. The bibliography remains selective rather than
+an exhaustive reading list for all 27 chapters.
 
 ## Open editorial work
 

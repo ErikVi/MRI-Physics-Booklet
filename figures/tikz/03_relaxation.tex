@@ -1,0 +1,16 @@
+\begin{tikzpicture}
+\begin{axis}[width=.88\textwidth,height=.43\textwidth,xlabel={$t$ (ms)},ylabel={Normalized magnetization},
+xmin=0,xmax=120,ymin=0,ymax=1.08,legend style={at={(.98,.98)},anchor=north east,font=\scriptsize},
+grid=major]
+\addplot[MRIaccent,thick,domain=0:120,samples=121] {1-exp(-x/60)};
+\addlegendentry{$M_z/M_0,\ T_1=60$ ms}
+\addplot[black,dashed,domain=0:120,samples=121] {exp(-x/80)};
+\addlegendentry{$\exp(-t/T_2),\ T_2=80$ ms}
+\addplot[MRIgray,thick,domain=0:120,samples=121] {exp(-x/80-(.08*x)^2/2)};
+\addlegendentry{FID, $\sigma_\omega=80$ rad/s}
+\addplot[MRIaccent,densely dotted,very thick,domain=0:60,samples=121] {exp(-x/80-(.08*(x<=30 ? x : 60-x))^2/2)};
+\addlegendentry{Echo, $\tau=30$ ms}
+\draw[mri guide] (axis cs:30,0)--(axis cs:30,.28);
+\node[font=\scriptsize,anchor=south] at (axis cs:30,.28) {$\pi$};
+\end{axis}
+\end{tikzpicture}

@@ -1,0 +1,14 @@
+\begin{tikzpicture}[x=1cm,y=1cm,font=\small]
+\draw[mri axis] (0,0)--(5,0) node[right] {$x'$};
+\draw[mri axis] (0,0)--(0,3.8) node[above] {$z$};
+\draw[mri rf,-{Stealth}] (0,0)--(3.6,0) node[midway,below] {$B_a=\omega_1/\gamma$};
+\draw[mri gradient,-{Stealth}] (0,0)--(0,2.8) node[midway,left] {$\Delta\omega/\gamma$};
+\draw[mri guide] (3.6,0)--(3.6,2.8)--(0,2.8);
+\draw[very thick,MRIaccent,-{Stealth}] (0,0)--(3.6,2.8) node[above right] {$\vect B_{\mathrm{eff}}$};
+\draw (0,.8) arc[start angle=90,end angle=37.87,radius=.8];
+\node at (.6,1.15) {$\vartheta$};
+\node[align=left,anchor=west] at (6,2.8) {$\Omega=\sqrt{\omega_1^2+\Delta\omega^2}$\\[5pt]
+$\tan\vartheta=\omega_1/\Delta\omega$\\[5pt]$\vect M(t)=R_{\vect n}(-\Omega t)\vect M(0)$};
+\node[align=left,anchor=west] at (6,.6) {On resonance: $\vect n=\vect e_{x'}$\\[5pt]
+$90^\circ_{x'}:\quad +z\longrightarrow +y'$};
+\end{tikzpicture}

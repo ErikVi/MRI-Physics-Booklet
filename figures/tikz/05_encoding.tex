@@ -1,0 +1,15 @@
+\begin{tikzpicture}[x=1cm,y=1cm,font=\small]
+\draw[mri axis] (0,0)--(4.5,0) node[right] {$z$};
+\draw[mri axis] (2,-1.3)--(2,1.8) node[above] {$\Delta f$};
+\draw[mri signal] (.2,-1.08)--(4,1.2);
+\node[align=center] at (2,-2) {$\Delta f=\gammabar G_z z$\\Slope: Hz/m};
+\begin{scope}[xshift=7cm]
+\draw[mri axis] (-.4,0)--(4.5,0) node[right] {$z$};
+\foreach \x/\a in {0/135,1/45,2/-45,3/-135,4/-225}{
+ \draw[gray!60] (\x,.9) circle (.38);
+ \draw[mri rf,-{Stealth}] (\x,.9)--++(\a:.35);
+}
+\node[align=center] at (2,1.9) {Transverse phases after area $A$};
+\node[align=center] at (2,-2) {$\phi(z)=-\gamma Az$\\Phase decreases for $A>0$};
+\end{scope}
+\end{tikzpicture}

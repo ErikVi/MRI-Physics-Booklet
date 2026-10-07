@@ -15,9 +15,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y \
-            latexmk biber texlive-latex-extra texlive-fonts-recommended texlive-science
+            latexmk biber texlive-latex-extra texlive-fonts-recommended texlive-science python3-numpy
       - name: Validate architecture
-        run: python3 scripts/check_structure.py
+        run: |
+          python3 scripts/check_structure.py
+          python3 scripts/check_foundations.py
       - name: Compile book and check diagnostics
         run: |
           latexmk -pdf main.tex

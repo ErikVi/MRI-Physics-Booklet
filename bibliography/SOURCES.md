@@ -20,3 +20,23 @@ The seed database is deliberately selective. It is not a complete reading
 list for the eventual 27 chapters. In particular, hardware, spectroscopy,
 fMRI and safety require targeted sources during drafting. Safety limits
 must cite the applicable edition and jurisdiction at that time.
+
+## Foundational block (2026-10-07)
+
+The chapter derivations use the book's declared conventions. New primary anchors:
+
+| Key | Record | Use |
+| --- | --- | --- |
+| bloch1946 | [APS](https://journals.aps.org/pr/abstract/10.1103/PhysRev.70.460) | Induction and phenomenological Bloch dynamics; pages 460–474 also checked against publisher-deposited Crossref metadata |
+| hahn1950 | [APS](https://journals.aps.org/pr/abstract/10.1103/PhysRev.80.580) | Spin-echo refocusing |
+| torrey1956 | [APS](https://journals.aps.org/pr/abstract/10.1103/PhysRev.104.563) | Diffusion terms in magnetization evolution |
+| mcconnell1958 | [Publisher DOI](https://doi.org/10.1063/1.1744152) | Coupled exchange equations; metadata checked against publisher-deposited Crossref record |
+| shannon1949 | [IEEE](https://ieeexplore.ieee.org/document/1697831) | Sampling and recoverability |
+| gudbjartsson1995 | [Author manuscript at NIH](https://pmc.ncbi.nlm.nih.gov/articles/PMC2254141/) | Rician magnitude noise and Rayleigh limit |
+| hoult1976 | [Publisher DOI](https://doi.org/10.1016/0022-2364(76)90233-X) | Receive reciprocity and signal normalization; authors and pages checked against publisher-deposited Crossref record |
+| lauterbur1973 | [Nature](https://www.nature.com/articles/242190a0) | Spatial encoding and image formation |
+
+The examples specify rounded physical constants and model parameters explicitly.
+No tissue relaxation value or example coil response is asserted as a universal
+clinical constant. Later safety and operational standards remain outside this
+foundational milestone.

@@ -1,0 +1,9 @@
+\begin{tikzpicture}
+\begin{axis}[width=.88\textwidth,height=.43\textwidth,xlabel={$2Kx$},ylabel={Peak-normalized response},
+xmin=-4,xmax=4,ymin=-.3,ymax=1.1,grid=major,legend style={at={(.98,.98)},anchor=north east,font=\scriptsize}]
+\addplot[MRIaccent,thick,domain=-4:4,samples=321] {abs(x)<.0001 ? 1 : sin(deg(pi*x))/(pi*x)};
+\addlegendentry{Rectangular aperture}
+\addplot[MRIgray,dashed,thick,domain=-4:4,samples=321] {abs(x)<.0001 ? 1 : (sin(deg(pi*x/2))/(pi*x/2))^2};
+\addlegendentry{Triangular aperture}
+\end{axis}
+\end{tikzpicture}

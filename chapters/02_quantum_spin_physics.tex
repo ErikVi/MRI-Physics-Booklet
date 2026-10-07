@@ -1,59 +1,408 @@
-% Scope: Derive spin-half dynamics, thermal polarization and the density-matrix bridge to ensemble magnetization; distinguish single-spin coherence from ensemble averages.
-% Status: architecture only; no chapter prose or completed problems yet.
-% Prerequisites: Chapter 1.
-% Planned worked examples: Larmor frequencies at 1.5, 3 and 7 T; Boltzmann population differences and magnetization.
-% Planned figures: Zeeman levels, measurement bases and Bloch sphere.
-% Planned challenge problems: Recover the Bloch vector from a mixed state; test an incorrect population argument.
+% Scope: Spin-half quantum mechanics, thermal ensembles and the classical connection.
+% Status: foundational chapter with explicit density-matrix dynamics.
+% Prerequisites: Chapter 1 and the front-matter sign conventions.
+% Planned figures: Implemented Zeeman levels and Bloch-vector geometry.
+% Planned challenge problems: Implemented; solutions are in Appendix E.
 \chapter{Quantum Spin Physics}
 \label{ch:02}
+
+Nuclear spin is intrinsic angular momentum, not a charged sphere whose
+mechanical rotation must be inferred. Its state space, observables and
+dynamical law determine what an MRI experiment can prepare and measure.
+For uncoupled spin-half nuclei these rules admit an exact three-component
+representation of the density operator. This explains why a classical-looking
+magnetization vector describes many MRI experiments, even though thermal
+polarization and the magnetic moment are quantum mechanical. The operator
+framework used here is standard NMR theory \cite{levitt2008}.
 
 \section{Spin as intrinsic angular momentum}
 \label{sec:02:spin-as-intrinsic-angular-momentum}
 \subsection{States, measurement bases and superposition}
+Choose eigenvectors of $\op S_z$ as an orthonormal basis:
+$\ket{\uparrow}=(1,0)^{\mathsf T}$ and
+$\ket{\downarrow}=(0,1)^{\mathsf T}$.
+A pure state is $\ket\psi=a\ket{\uparrow}+b\ket{\downarrow}$,
+where $\abs a^2+\abs b^2=1$. A common phase multiplying both coefficients
+changes no measurement probability. Their relative phase does:
+transverse-basis measurements depend on $a^*b$.
+
+Up to a common phase,
+\[
+ \ket\psi=\cos(\vartheta/2)\ket{\uparrow}
+       +\ee^{\ii\varphi}\sin(\vartheta/2)\ket{\downarrow}.
+\]
+A $z$ measurement gives $+\hbar/2$ with probability
+$\cos^2(\vartheta/2)$ and $-\hbar/2$ with probability
+$\sin^2(\vartheta/2)$. Neither outcome implies a pre-existing classical
+vector with simultaneous definite Cartesian components. Repeated
+measurements on identically prepared systems determine expectation
+values, which can be represented by a vector.
+
 \subsection{Pauli matrices and spin operators}
+The Pauli matrices and dimensional spin operators are
+\begin{equation}
+ \sigma_x=\begin{pmatrix}0&1\\1&0\end{pmatrix},\quad
+ \sigma_y=\begin{pmatrix}0&-\ii\\\ii&0\end{pmatrix},\quad
+ \sigma_z=\begin{pmatrix}1&0\\0&-1\end{pmatrix},\qquad
+ \op S_j=\frac{\hbar}{2}\sigma_j .
+ \label{eq:02:pauli}
+\end{equation}
+Direct multiplication gives
+$\sigma_j\sigma_k=\delta_{jk}\mat I+
+\ii\sum_l\epsilon_{jkl}\sigma_l$ and hence
+$\op{\vect S}^{\,2}=3\hbar^2\mat I/4$.
+An individual component eigenvalue has magnitude $\hbar/2$;
+the squared total angular momentum has eigenvalue
+$\hbar^2s(s+1)$ with $s=1/2$. Confusing these magnitudes gives an
+incorrect magnetic moment.
+
+For any unit vector $\vect n$,
+$(\vect n\cdot\vect\sigma)^2=\mat I$, so the two projectors are
+$\mat P_\pm=(\mat I\pm\vect n\cdot\vect\sigma)/2$.
+Their expectation values supply measurement probabilities along an
+arbitrary axis without explicitly constructing its eigenvectors.
+
 \subsection{Commutators, uncertainty and eigenstates}
+The multiplication law implies
+$[\op S_j,\op S_k]=\ii\hbar\sum_l\epsilon_{jkl}\op S_l$.
+Positivity of the norm of a linear combination of
+$(\op A-\langle A\rangle)\ket\psi$ and
+$(\op B-\langle B\rangle)\ket\psi$ gives
+$\Delta A\,\Delta B\geq\tfrac12\abs{\langle[\op A,\op B]\rangle}$.
+In $\ket{\uparrow}$, $\Delta S_x=\Delta S_y=\hbar/2$:
+their product saturates the bound $\hbar^2/4$.
+Even a fully polarized spin has transverse measurement uncertainty.
+
+The states $\ket{\pm x}=(\ket{\uparrow}\pm\ket{\downarrow})/\sqrt2$
+have equal $z$ populations but opposite transverse expectation values.
+Similarly, $\ket{+y}=(\ket{\uparrow}+\ii\ket{\downarrow})/\sqrt2$.
+Equal longitudinal populations do not imply zero transverse moment.
 
 \section{Magnetic moments and Zeeman splitting}
 \label{sec:02:magnetic-moments-and-zeeman-splitting}
 \subsection{Gyromagnetic ratio and Hamiltonian}
+The magnetic moment operator is $\op{\vect\mu}=\gamma\op{\vect S}$.
+In a classical applied field,
+\begin{equation}
+ \op H(t)=-\gamma\op{\vect S}\cdot\vect B(t)
+         =-\frac{\hbar\gamma}{2}\vect B(t)\cdot\vect\sigma .
+ \label{eq:02:zeeman}
+\end{equation}
+The nuclear structure is incorporated in $\gamma$; it is not determined
+by modeling the proton as a classical point charge. The units are energy
+since $\hbar\gamma B$ is an action times inverse time.
+
 \subsection{Energy levels and transition frequencies}
+For positive $\gamma$ and field $B_0\vect e_z$,
+\[
+ E_\uparrow=-\hbar\omega_0/2,\qquad E_\downarrow=+\hbar\omega_0/2,
+ \qquad \Delta E=\hbar\omega_0=hf_0 .
+\]
+A moment along the field has lower energy. A transverse perturbation
+has off-diagonal matrix elements in this basis and drives transitions;
+a longitudinal perturbation changes the splitting. Resonance matches
+the drive to the splitting, including shielding and local-field shifts.
+
+\begin{figure}[tb]
+ \centering\input{figures/tikz/02_zeeman}
+ \caption{Positive-$\gamma$ Zeeman levels and a spin-half Bloch vector.
+ RF couples the levels. The vector represents expectation values, not
+ simultaneous sharp Cartesian spin components.}
+ \label{fig:02:zeeman}
+\end{figure}
+
 \subsection{Positive and negative gyromagnetic ratios}
+For negative $\gamma$, the ordering of the $S_z$ energies and the
+precession handedness both reverse. The transition-frequency magnitude
+is $\abs\gamma B_0/(2\pi)$. Equilibrium magnetization still points along
+the field in this independent-spin paramagnetic model: the preferred
+spin orientation and its conversion to magnetic moment both reverse.
+A susceptibility proportional to $\gamma^2$ remains positive.
+Our proton RF conventions require translation for negative-$\gamma$
+nuclei.
 
 \section{Unitary time evolution}
 \label{sec:02:unitary-time-evolution}
 \subsection{Schrodinger evolution and propagators}
+Schrodinger evolution is
+$\ii\hbar\partial_t\ket\psi=\op H(t)\ket\psi$.
+For constant $\op H$, the solution is
+$U(t)\ket{\psi(0)}$ with $U=\exp(-\ii\op Ht/\hbar)$.
+Thus
+\begin{equation}
+ U_0(t)=\begin{pmatrix}
+ \ee^{+\ii\omega_0t/2}&0\\0&\ee^{-\ii\omega_0t/2}
+ \end{pmatrix}.
+ \label{eq:02:free-u}
+\end{equation}
+The signs follow from the negative magnetic-dipole Hamiltonian.
+A $2\pi$ rotation changes a spinor's sign, but returns its density matrix
+and single-spin observables to their original values. It does not reverse
+the MRI magnetization after a $360^\circ$ RF rotation.
+
 \subsection{Relative phase and Larmor precession}
+For amplitudes $a,b$,
+$\langle S_x\rangle=\hbar\operatorname{Re}(a^*b)$,
+$\langle S_y\rangle=\hbar\operatorname{Im}(a^*b)$ and
+$\langle S_z\rangle=\hbar(\abs a^2-\abs b^2)/2$.
+Since $a^*(t)b(t)=a^*(0)b(0)\ee^{-\ii\omega_0t}$,
+\begin{equation}
+ \langle S_x+\ii S_y\rangle(t)
+ =\langle S_x+\ii S_y\rangle(0)\ee^{-\ii\omega_0t}.
+ \label{eq:02:coherence}
+\end{equation}
+An initial $\ket{+x}$ state moves toward $-y$.
+This is an independent physical check on the precession sign.
+
 \subsection{Expectation values and the classical torque equation}
+Use $\dd\langle\op S_i\rangle/\dd t
+=(\ii/\hbar)\langle[\op H,\op S_i]\rangle$ and the commutators to obtain
+\begin{equation}
+ \frac{\dd}{\dd t}\langle\op{\vect S}\rangle
+       =\gamma\langle\op{\vect S}\rangle\times\vect B .
+ \label{eq:02:ehrenfest}
+\end{equation}
+Closure is exact because the Hamiltonian is linear in spin.
+Multiplication by spin density and $\gamma$ gives the torque part of
+the Bloch equations. A coupled-spin term such as
+$\op S_{1z}\op S_{2z}$ instead makes first-moment evolution depend on
+correlations. A single three-component vector then need not close.
 
 \section{Density operators and ensembles}
 \label{sec:02:density-operators-and-ensembles}
 \subsection{Pure states, mixtures and coherence}
+For a mixture with classical probabilities $p_a$,
+$\op\rho=\sum_a p_a\ket{\psi_a}\bra{\psi_a}$.
+It is Hermitian, positive semidefinite and trace one.
+The mean of $\op A$ is $\Tr(\op\rho\op A)$.
+Different ensemble decompositions can give the same density matrix;
+single-spin measurements cannot distinguish them.
+
+A pure state has $\op\rho^2=\op\rho$ and $\Tr(\op\rho^2)=1$.
+An equal incoherent up/down mixture is $\mat I/2$, whereas
+$\ket{+x}\bra{+x}$ has off-diagonal entries $1/2$.
+Both have equal $z$ populations. Off-diagonal coherence is basis-dependent;
+it is not an extra population of some third spin species.
+
 \subsection{Bloch-vector representation and positivity}
+Every Hermitian trace-one $2\times2$ matrix can be written
+\begin{equation}
+ \op\rho=\frac12(\mat I+\vect p\cdot\vect\sigma)
+ =\frac12\begin{pmatrix}1+p_z&p_x-\ii p_y\\p_x+\ii p_y&1-p_z\end{pmatrix}.
+ \label{eq:02:density-bloch}
+\end{equation}
+Here $p_j=\Tr(\op\rho\sigma_j)$ is dimensionless polarization and
+$\langle\op{\vect S}\rangle=\hbar\vect p/2$.
+The eigenvalues are $(1\pm\norm{\vect p})/2$, using
+$(\vect p\cdot\vect\sigma)^2=\norm{\vect p}^2\mat I$.
+Physicality requires $\norm{\vect p}\leq1$.
+The Bloch sphere surface is pure; its interior is mixed, with purity
+$(1+\norm{\vect p}^2)/2$.
+
+For local spin density $\rho_s$,
+\begin{equation}
+ \vect M=\rho_s\gamma\frac{\hbar}{2}\vect p,\qquad
+ M_+=\rho_s\gamma\hbar\,\rho_{21}.
+ \label{eq:02:magnetization}
+\end{equation}
+The \emph{lower} off-diagonal matrix entry encodes $M_+$ in our convention.
+These relations apply to a representative local one-spin density matrix,
+including an ensemble-averaged reduced state.
+
 \subsection{Dephasing versus loss of single-spin coherence}
+Unitary evolution obeys
+$\dot{\op\rho}=-(\ii/\hbar)[\op H,\op\rho]$ and preserves eigenvalues
+and purity. Frequency dispersion can nevertheless reduce ensemble
+transverse mean:
+$p_+(t)=p_+(0)\int P(\Delta\omega)\ee^{-\ii\Delta\omega t}\dd\Delta\omega$.
+Each member retains magnitude while their vector sum shrinks.
+Offset knowledge or a refocusing pulse can undo this cancellation.
+
+Environmental coupling can reduce coherence in a spin's reduced density
+matrix too, and this need not be undone by a simple pulse.
+Some slowly varying environmental perturbations are refocusable.
+The relevant distinctions are correlation time and controllability;
+dephasing is not synonymous with an irrecoverable process in every model.
 
 \section{Thermal equilibrium and polarization}
 \label{sec:02:thermal-equilibrium-and-polarization}
 \subsection{Partition function and Boltzmann populations}
+For independent spins at bath temperature $T_{\rm bath}$, let
+$\beta=1/(k_{\rm B}T_{\rm bath})$ and $x=\beta\hbar\omega_0/2$.
+Then
+\[
+ Z=\Tr(\ee^{-\beta\op H_0})=2\cosh x,\qquad
+ \op\rho_{\rm eq}=\frac{\ee^{x\sigma_z}}{2\cosh x}
+                =\frac12(\mat I+\tanh x\,\sigma_z).
+\]
+The probabilities are $\ee^{\pm x}/(2\cosh x)$, giving
+\begin{equation}
+ p_\uparrow-p_\downarrow=\tanh x,\qquad
+ p_\uparrow/p_\downarrow=\ee^{2x}.
+ \label{eq:02:boltzmann}
+\end{equation}
+The population difference divided by total population differs from the
+fractional excess relative to one population. Their small-$x$ limits
+differ by a factor of two.
+
 \subsection{High-temperature expansion and its accuracy}
+For $\abs x\ll1$, $\tanh x=x-x^3/3+O(x^5)$.
+Replacing it by $x$ has relative error approximately $x^2/3$.
+Physiological temperature is high relative to the proton Zeeman splitting,
+not necessarily to every microscopic energy in tissue.
+The identity part of the thermal density matrix greatly exceeds the
+polarized deviation. Unitary RF evolution leaves the identity unchanged;
+it rotates only that small deviation.
+
 \subsection{Spin density and macroscopic magnetization}
+Combining the population and moment expressions gives
+\begin{equation}
+ M_0=\rho_s\frac{\gamma\hbar}{2}
+       \tanh\left(\frac{\hbar\gamma B_0}{2k_{\rm B}T_{\rm bath}}\right)
+ \simeq \frac{\rho_s\gamma^2\hbar^2B_0}{4k_{\rm B}T_{\rm bath}} .
+ \label{eq:02:curie}
+\end{equation}
+Units are moment per volume, or A/m. The linear field scaling assumes
+independent spins and small polarization. Received voltage also depends
+on frequency and coil response; SNR does not follow from $M_0$ alone.
+
+For $N$ independent spins, mean population imbalance is $N\tanh x$
+and its standard deviation is $\sqrt{N(1-\tanh^2x)}$.
+Macroscopic MRI volumes therefore have large absolute net polarization
+despite its small fraction. This is distinct from the question of whether
+receiver noise is dominated by spin fluctuations or electrical noise.
 
 \section{Driven spins and the classical limit}
 \label{sec:02:driven-spins-and-the-classical-limit}
 \subsection{RF interaction Hamiltonian}
+For a co-rotating field of amplitude $B_a$ and phase $\phi$, the
+rotating-frame Hamiltonian under the rotating-wave approximation is
+\[
+ \op H_{\rm rot}=-\frac{\hbar}{2}\left[
+ \Delta\omega\sigma_z+\omega_1(\cos\phi\,\sigma_x+\sin\phi\,\sigma_y)\right],
+ \qquad\omega_1=\gamma B_a .
+\]
+\Cref{ch:04} derives the transformation and $B_a=\abs{\Btx}$.
+On resonance, for constant phase, the propagator is
+$U=\cos(\alpha/2)\mat I+\ii\sin(\alpha/2)\vect n\cdot\vect\sigma$,
+with $\alpha=\omega_1t$ and $\vect n=(\cos\phi,\sin\phi,0)$.
+Separate even and odd exponential powers to derive this formula.
+
+An initially spin-up pure state then has spin-down probability
+$\sin^2(\alpha/2)$. A thermal state instead has its polarization rotated:
+for $\phi=0$,
+$\vect p=(0,p_0\sin\alpha,p_0\cos\alpha)$.
+A $90^\circ$ pulse equalizes populations while maximizing transverse
+magnetization; population imbalance alone no longer characterizes it.
+
 \subsection{Rotating-wave approximation and resonance}
+A linear RF oscillation has equal co- and counter-rotating components.
+In a resonant frame one is slow; the other oscillates near twice the carrier.
+When drive strength, detuning and envelope variation rates are small
+relative to the carrier, the latter averages to a small correction.
+A linearly polarized peak field $B_{\rm pk}$ therefore gives
+$\omega_1=\gamma B_{\rm pk}/2$. For an ideal purely co-rotating field,
+discarding a counter-rotating term is unnecessary. Strong drives or
+rapid modulation require the full Hamiltonian.
+
 \subsection{Ensemble Bloch dynamics and hidden microscopic physics}
+For a single spin with a linear Hamiltonian the Bloch vector exactly
+represents the density matrix, including mixed states.
+Relaxation requires an open-system model. In a Markovian spin-half
+model with energy-downward and energy-upward rates $W_d,W_u$ and
+pure-dephasing rate $\Gamma_\phi$,
+\[
+ R_1=W_d+W_u,\qquad R_2=R_1/2+\Gamma_\phi .
+\]
+For protons the lower-energy state is spin up. Detailed balance fixes
+the equilibrium polarization. The bound $T_2\leq2T_1$ follows for this
+model; empirical effective times in heterogeneous multi-pool data need
+not describe this same pair of microscopic processes.
+
+Classical ensemble magnetization suffices when first moments close under
+the dynamics. It hides quantum measurement uncertainty, purity and
+higher correlations. Scalar couplings in spectroscopy can transfer
+information into correlations outside a one-vector model. Routine imaging
+often admits local Bloch vectors with relaxation and transport as an
+appropriate reduced description.
 
 \section{Worked examples}
 \label{sec:02:worked-examples}
-% Planned calculations: Larmor frequencies at 1.5, 3 and 7 T; Boltzmann population differences and magnetization.
 \subsection{Derivation and quantitative calculation}
+\begin{workedexample}[Thermal polarization]
+Use $\gammabar=\SI{42.57748}{\mega\hertz\per\tesla}$,
+$\hbar=\SI{1.054571817e-34}{\joule\second}$ and
+$k_{\rm B}=\SI{1.380649e-23}{\joule\per\kelvin}$.
+At $T_{\rm bath}=\SI{310}{\kelvin}$:
+\begin{center}
+\begin{tabular}{@{}rrr@{}}\toprule
+$B_0$ (T)&$f_0$ (MHz)&$10^6(p_\uparrow-p_\downarrow)$\\\midrule
+1.5&63.8662&4.9437\\3.0&127.7324&9.8874\\7.0&298.0424&23.0706\\\bottomrule
+\end{tabular}
+\end{center}
+The rounded free-proton value illustrates scale, not a scanner calibration;
+shielding slightly changes actual resonance.
+At 7 T the relative high-temperature error is only
+$x^2/3\simeq1.77\times10^{-10}$.
+\end{workedexample}
+\begin{workedexample}[Net moment in a voxel]
+For illustrative water-like proton density
+$\rho_s=\SI{6.69e28}{\per\cubic\metre}$ at 3 T and 310 K,
+$M_0=\SI{9.33e-3}{\ampere\per\metre}$.
+A \SI{1}{\cubic\milli\metre} voxel has $6.69\times10^{19}$ protons,
+mean population excess $6.62\times10^{14}$ and equilibrium magnetic
+moment $\SI{9.33e-12}{\ampere\square\metre}$.
+The density is a stated model input, not a universal tissue constant.
+\end{workedexample}
 \subsection{Assumptions, limiting cases and scanner interpretation}
+\begin{workedexample}[Equal populations with coherence]
+Apply $U=\ee^{+\ii\pi\sigma_x/4}$ to
+$\op\rho_{\rm eq}=(\mat I+p_0\sigma_z)/2$.
+Multiplication gives $\op\rho'=(\mat I+p_0\sigma_y)/2$:
+both diagonal entries are $1/2$, while $\rho'_{21}=\ii p_0/2$.
+Thus $M_+=\ii M_0$. Replacing this state by an incoherent 50:50
+mixture would incorrectly predict no signal.
+\end{workedexample}
 
 \section{Challenge problems}
 \label{sec:02:challenge-problems}
-% Problem design: Recover the Bloch vector from a mixed state; test an incorrect population argument.
-% Use challengeproblem and stable labels prob:02:<topic>.
-% Complete solutions belong in Appendix E, section for this chapter.
-% Use \begin{solution}{prob:02:<topic>} ... \end{solution} there.
 \subsection{Derivation and quantitative design}
+\begin{challengeproblem}[A proposed density matrix]
+\label{prob:02:tomography}
+For $\op\rho=\tfrac12\begin{pmatrix}1+a&b-\ii c\\b+\ii c&1-a\end{pmatrix}$,
+derive physicality, purity and Cartesian-axis measurement probabilities.
+Evaluate $(a,b,c)=(0.6,0.3,0.4)$ and explain the failure of
+$(0.9,0.6,0)$. Distinguish a nonphysical fit from a negative noisy datum.
+\end{challengeproblem}
+\begin{challengeproblem}[Population conventions]
+\label{prob:02:thermal}
+Derive the exact spin-half partition function, polarization and magnetization
+for signed $\gamma$. Show that equilibrium magnetization is parallel to
+$B_0$ for either sign. At 3 T and 310 K compare
+$(N_\uparrow-N_\downarrow)/(N_\uparrow+N_\downarrow)$ with
+$(N_\uparrow-N_\downarrow)/N_\downarrow$ for protons.
+Estimate when linearized polarization has one-percent relative error.
+\end{challengeproblem}
+\begin{challengeproblem}[A two-pulse interferometer]
+\label{prob:02:ramsey}
+Starting from $p_0\vect e_z$, apply a phase-zero $\pi/2$ pulse,
+free rotating-frame evolution for $\tau$ with detuning $\Delta\omega$,
+then a $\pi/2$ pulse of phase $\phi$. Neglect relaxation.
+Derive final $p_z$ by quantum propagators and by Bloch rotations.
+\end{challengeproblem}
 \subsection{Model criticism and integrated reasoning}
+\begin{challengeproblem}[Reversible ensemble dephasing]
+\label{prob:02:dephase}
+Equal subensembles start in $\ket{+x}$ with offsets $+\Omega$ and
+$-\Omega$. Find their average density matrix and purity versus time.
+Apply a phase-zero $\pi$ pulse at $\tau$ and determine the state at
+$2\tau$. Can loss of ensemble purity prove irreversible decoherence?
+\end{challengeproblem}
+\begin{challengeproblem}[A physical relaxation map]
+\label{prob:02:rates}
+For energy-downward and energy-upward rates $W_d,W_u$, derive equilibrium
+polarization and $T_1$ from the population master equation.
+If coherence decays at $(W_d+W_u)/2+\Gamma_\phi$, find $T_2$ and
+the allowed ratio $T_2/T_1$. Why does fitting two arbitrary exponentials
+not identify a valid microscopic model automatically?
+\end{challengeproblem}

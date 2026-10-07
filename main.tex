@@ -11,7 +11,7 @@
 \begin{titlepage}
 \thispagestyle{empty}
 \vspace*{27mm}
-{\color{MRIaccent}\rule{\textwidth}{1.1pt}\par}
+{\noindent\color{MRIaccent}\rule{\textwidth}{1.1pt}\par}
 \vspace{12mm}
 {\fontsize{38}{43}\selectfont\bfseries MRI Physics\par}
 \vspace{9mm}
@@ -20,9 +20,9 @@ Advanced Acquisition and Reconstruction\par}
 \vfill
 {\small\scshape Graduate reference textbook\par}
 \vspace{3mm}
-{\small Architecture edition\par}
+{\small Foundations edition\par}
 \vspace{10mm}
-{\color{MRIaccent}\rule{\textwidth}{.4pt}\par}
+{\noindent\color{MRIaccent}\rule{\textwidth}{.4pt}\par}
 \end{titlepage}
 \chapter{Scope and Reading Structure}
 \label{front:scope}
@@ -31,12 +31,14 @@ in applied and medical physics. Its organizing argument runs from spin
 dynamics to measurable signals, acquisition design and inference.
 Prerequisites are developed where they support that argument.
 
-This architecture edition contains the planned hierarchy, notation
-contract and source framework. Chapter headings describe intended
-coverage; they do not represent completed exposition. Worked examples,
-figures and difficult problems are planned in source comments. Complete
-challenge-problem solutions will be separated from questions in
-Appendix~\ref{app:e}. No chapter is assigned an artificial page budget.
+This edition completes the foundational block in Chapters~1--6:
+mathematical tools, quantum spin physics, classical magnetization,
+RF excitation, spatial encoding and Fourier signal formation.
+These chapters contain derivations, numerical examples, vector figures
+and thirty challenge problems with worked solutions in Appendix~\ref{app:e}.
+Chapters~7--27 and the remaining reference appendices retain their planned
+hierarchy and are not yet completed exposition. No chapter is assigned
+an artificial page budget.
 
 The default reading order is the printed chapter order. The EPG treatment
 in \cref{ch:13} supplies a second, computational reading of the echo trains
@@ -54,10 +56,10 @@ Stejskal--Tanner diffusion experiment \cite{stejskal1965},
 SENSE \cite{pruessmann1999}, GRAPPA \cite{griswold2002},
 compressed-sensing MRI \cite{lustig2007}, magnetic resonance
 fingerprinting \cite{ma2013}, and the EPG review by
-Weigel \cite{weigel2015}. These are starting references for the
-planned treatments, not evidence that those treatments are already
-written. Additional primary sources will be added with the derivations
-and methods that actually require them.
+Weigel \cite{weigel2015}. The foundational chapters additionally cite primary work on induction,
+spin echoes, diffusion, exchange, encoding, sampling and reception.
+References attached to later chapter outlines identify intended sources,
+not completed treatments.
 
 \tableofcontents
 \input{preamble/notation}

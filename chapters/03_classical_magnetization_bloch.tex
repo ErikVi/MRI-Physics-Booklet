@@ -1,53 +1,411 @@
-% Scope: Construct the phenomenological Bloch model from torque and equilibration; solve free evolution and connect reversibility, relaxation and exchange.
-% Status: architecture only; no chapter prose or completed problems yet.
+% Scope: Derivation, solutions and limitations of ensemble Bloch dynamics.
+% Status: foundational chapter with explicit propagators and refocusing.
 % Prerequisites: Chapters 1 and 2.
-% Planned worked examples: Longitudinal recovery, transverse decay and an inhomogeneous ensemble.
-% Planned figures: Relaxation curves and isochromat refocusing.
-% Planned challenge problems: Solve a piecewise field history; distinguish static dephasing from irreversible loss.
+% Planned figures: Implemented recovery, FID and echo envelopes.
+% Planned challenge problems: Implemented; solutions are in Appendix E.
 \chapter{Classical Magnetization and the Bloch Equations}
 \label{ch:03}
+
+A measured transverse signal can decrease because individual moments lose
+coherence, because coherent subensembles cancel, because spins leave the
+observed volume, or because the receiver weights change. A useful dynamical
+model distinguishes these mechanisms before assigning a relaxation time.
+The Bloch equations combine the exact first-moment torque law with a
+phenomenological description of equilibration \cite{bloch1946}.
+Their simplicity is valuable precisely when the assumptions of that
+reduction are made explicit.
 
 \section{From magnetic torque to ensemble dynamics}
 \label{sec:03:from-magnetic-torque-to-ensemble-dynamics}
 \subsection{Torque equation and conserved magnitude}
+From \cref{eq:02:ehrenfest}, equivalent independent spins obey
+$\dot{\vect M}=\gamma\vect M\times\vect B$.
+The field may depend on time, but at each instant
+$\vect M\cdot\dot{\vect M}=0$, so torque preserves $\norm{\vect M}$.
+For a constant field it also preserves $\vect M\cdot\vect B$.
+Neither loss of transverse magnitude nor recovery of longitudinal
+polarization follows from torque alone.
+
+A spatially resolved magnetization is a local ensemble average.
+Taking a spatial average of the torque equation is not generally the same
+as evolving the average in the average field:
+$\langle\vect M\times\vect B\rangle$ can differ from
+$\langle\vect M\rangle\times\langle\vect B\rangle$.
+The missing correlation is exactly what makes intravoxel dephasing
+possible.
+
 \subsection{Equilibrium magnetization and phenomenological relaxation}
+For a dominant static field along $z$, suppose small departures from
+longitudinal equilibrium relax at rate $R_1=1/T_1$, and transverse
+first moments relax isotropically at rate $R_2=1/T_2$.
+Then
+\begin{equation}
+ \dot{\vect M}
+ =\gamma\vect M\times\vect B
+ -R_2M_x\vect e_x-R_2M_y\vect e_y
+ -R_1(M_z-M_0)\vect e_z .
+ \label{eq:03:bloch}
+\end{equation}
+The source $R_1M_0$ is essential: replacing the last term by $-R_1M_z$
+would equilibrate to zero polarization at finite field.
+These are relaxation toward the dominant-field equilibrium axes, not
+an isotropic shrinking of a vector toward its instantaneous effective
+RF field.
+
+The rates can be motivated by a bath with short memory compared with
+the observed dynamics, weak coupling and approximately stationary
+fluctuation statistics. Longitudinal recovery represents exchange of
+Zeeman energy; transverse decay also responds to phase perturbations.
+The quantum rate model in \cref{ch:02} illustrates why one cannot choose
+arbitrary microscopic $T_1,T_2$ independently.
+
 \subsection{Assumptions of the single-pool Bloch model}
+Equation \eqref{eq:03:bloch} assumes that one set of local rates and one
+equilibrium magnetization characterize the observed pool.
+It neglects explicit spin-spin correlations, chemical exchange, transport
+and memory. These can be added, but they are not already encoded by
+renaming every observed decay constant $T_2$.
+
+RF excitation can rotate the vector far from equilibrium while the
+linear relaxation law remains a useful approximation for weakly polarized
+nuclear ensembles. This is different from claiming that the RF dynamics
+themselves are a small perturbation. Conversely, multi-exponential
+tissue signals or a broad distribution of environments may not admit
+one unique relaxation time.
 
 \section{Solutions in a static field}
 \label{sec:03:solutions-in-a-static-field}
 \subsection{Longitudinal recovery and inversion}
+With no transverse RF, separation gives
+\begin{equation}
+ M_z(t)=M_0+[M_z(0)-M_0]\ee^{-t/T_1}.
+ \label{eq:03:recovery}
+\end{equation}
+An ideal saturation preparation has $M_z(0)=0$ and recovers as
+$M_0(1-\ee^{-t/T_1})$.
+An ideal inversion from equilibrium has $M_z(0)=-M_0$ and recovers as
+$M_0(1-2\ee^{-t/T_1})$. Its null occurs at $t=T_1\ln2$.
+This null formula requires fully recovered initial magnetization and
+perfect inversion; repeated readouts and finite repetition times
+alter the initial condition.
+
+If the preparation gives $M_z(0)=-\eta M_0$, the null is
+$T_1\ln(1+\eta)$ for $\eta>0$.
+If an experiment reports only magnitude, negative and positive
+longitudinal values can lead to the same magnitude after a fixed readout.
+The sign information is recoverable only with an appropriate phase
+reference or signal model.
+
 \subsection{Complex transverse solution and phase}
+Writing $M_+=M_x+\ii M_y$ combines the transverse equations:
+\[
+ \dot M_+=-(R_2+\ii\omega_0)M_+,\qquad
+ M_+(t)=M_+(0)\ee^{-R_2t}\ee^{-\ii\omega_0t}.
+\]
+In rotating coordinates replace $\omega_0$ by $\Delta\omega$.
+For time-varying longitudinal offset with constant $R_2$,
+\begin{equation}
+ M_+(t)=M_+(0)\ee^{-R_2t}
+       \exp\left[-\ii\int_0^t\Delta\omega(u)\dd u\right].
+ \label{eq:03:free}
+\end{equation}
+This scalar equation commutes with itself at different times.
+It does not justify the same replacement of time ordering for RF fields
+whose axes vary.
+
 \subsection{Affine propagators and piecewise-constant fields}
+In Cartesian components \cref{eq:03:bloch} is
+$\dot{\vect M}=\mat A\vect M+\vect b$, with
+\begin{equation}
+ \mat A=\begin{pmatrix}
+ -R_2&\gamma B_z&-\gamma B_y\\
+ -\gamma B_z&-R_2&\gamma B_x\\
+ \gamma B_y&-\gamma B_x&-R_1
+ \end{pmatrix},\qquad
+ \vect b=\begin{pmatrix}0\\0\\R_1M_0\end{pmatrix}.
+ \label{eq:03:generator}
+\end{equation}
+Variation of constants gives
+\[
+ \vect M(t)=\ee^{t\mat A}\vect M(0)+
+             \int_0^t\ee^{(t-u)\mat A}\vect b\dd u.
+\]
+If $\mat A$ is invertible, the integral is
+$\mat A^{-1}(\ee^{t\mat A}-\mat I)\vect b$.
+A numerically safer formulation valid also when rates vanish is
+\begin{equation}
+ \begin{pmatrix}\vect M(t)\\1\end{pmatrix}
+ =\exp\left[t\begin{pmatrix}\mat A&\vect b\\0&0\end{pmatrix}\right]
+  \begin{pmatrix}\vect M(0)\\1\end{pmatrix}.
+ \label{eq:03:affine}
+\end{equation}
+Successive time intervals multiply these propagators in chronological
+order, with the earliest acting on the right. The augmented coordinate
+is a bookkeeping device for recovery, not a fourth magnetization component.
 
 \section{Inhomogeneous ensembles}
 \label{sec:03:inhomogeneous-ensembles}
 \subsection{Frequency distributions and free induction decay}
+Let $P(\Delta\omega)$ be a normalized offset density, with common
+initial transverse magnetization and common $T_2$. The ensemble signal is
+\begin{equation}
+ \overline M_+(t)=M_+(0)\ee^{-t/T_2}
+       \int P(\Delta\omega)\ee^{-\ii\Delta\omega t}\dd\Delta\omega .
+ \label{eq:03:ensemble}
+\end{equation}
+The integral is the characteristic function of the offset distribution.
+For a Gaussian centered at $\overline\omega$ with standard deviation
+$\sigma_\omega$, it is
+$\ee^{-\ii\overline\omega t}\ee^{-\sigma_\omega^2t^2/2}$.
+For a Lorentzian with angular half-width $a$, it is
+$\ee^{-\ii\overline\omega t}\ee^{-a\abs t}$.
+For a uniform density over $[-\Omega,\Omega]$, it is
+$\sin(\Omega t)/(\Omega t)$.
+A uniform field gradient across a uniformly weighted slab generates the
+last case. Zeros and sign changes of an FID can arise from coherent
+cancellation rather than an oscillating relaxation rate.
+
 \subsection{T2, T2-star and reversible broadening}
+For Lorentzian static broadening and $t\geq0$, the envelope is exponential
+with $R_2^*=R_2+a$. The frequently used decomposition
+$R_2^*=R_2+R_2'$ is therefore exact for that specific broadening model.
+It is not a theorem for an arbitrary voxel's frequency distribution.
+
+Consider a phase-zero ideal $\pi$ pulse at time $\tau$.
+It maps $M_+\mapsto M_+^*$ and $M_z\mapsto-M_z$.
+For a static offset, free evolution before and after gives
+\begin{equation}
+ M_+(t)=M_+^*(0)\ee^{-t/T_2}
+       \ee^{-\ii\Delta\omega(t-2\tau)},\qquad t>\tau .
+ \label{eq:03:echo}
+\end{equation}
+The ensemble rephases at $2\tau$ while the factor $\ee^{-2\tau/T_2}$
+remains. This is the essential refocusing mechanism behind spin echoes
+\cite{hahn1950}. The pulse does not undo random motion through a gradient,
+RF errors, exchange, or arbitrary rapid environmental fluctuations.
+
+\begin{figure}[tb]
+ \centering\input{figures/tikz/03_relaxation}
+ \caption{Normalized longitudinal recovery and transverse envelopes.
+ The echo restores static Gaussian dephasing at $2\tau$ but remains
+ below unity because of homogeneous transverse relaxation.
+ Curves follow the equations in the text; the RF pulse is instantaneous.}
+ \label{fig:03:relaxation}
+\end{figure}
+
 \subsection{Limits of exponential effective relaxation}
+For the Gaussian case, the log-envelope slope is
+$-\dd\ln\abs{\overline M_+}/\dd t=R_2+\sigma_\omega^2t$.
+A fitted exponential rate consequently depends on the observation window.
+A multi-pool signal
+$S(t)=\sum_a A_a\ee^{-R_{2a}t}$ also has a time-dependent slope,
+even without static frequency dispersion.
+
+A useful extension treats $\delta\omega(t)$ as a stationary zero-mean
+Gaussian random process with correlation
+$C(u-v)=\E[\delta\omega(u)\delta\omega(v)]$.
+For a pulse-dependent toggling sign $y(u)=\pm1$,
+$\Phi=\int_0^t y(u)\delta\omega(u)\dd u$ is Gaussian, so
+\[
+ \E[\ee^{-\ii\Phi}]
+ =\exp\left[-\frac12\int_0^t\!\!\int_0^t
+                  y(u)y(v)C(u-v)\dd u\dd v\right].
+\]
+A constant offset is canceled when $\int y=0$.
+Very short-correlated fluctuations generally are not.
+The expression explains why an echo is a filter of fluctuation timescales,
+not a universal reversal of every mechanism called dephasing.
 
 \section{Driven and time-dependent dynamics}
 \label{sec:03:driven-and-time-dependent-dynamics}
 \subsection{Constant effective-field solution}
+In rotating coordinates, let the RF field be along $x$ with
+$\omega_1=\gamma B_a$ and detuning $\Delta\omega$.
+Without relaxation the vector rotates about
+$\vect n=(\omega_1,0,\Delta\omega)/\Omega$ at angle $-\Omega t$,
+where $\Omega=(\omega_1^2+\Delta\omega^2)^{1/2}$.
+Rodrigues' identity gives
+\[
+ \vect M(t)=\vect M(0)\cos\Omega t
+ -(\vect n\times\vect M(0))\sin\Omega t
+ +\vect n[\vect n\cdot\vect M(0)](1-\cos\Omega t).
+\]
+With relaxation use \cref{eq:03:affine}. It remains exact for constant
+coefficients even when relaxation and RF rotations do not commute.
+
+The continuous-drive steady state follows by setting derivatives to zero:
+\begin{equation}
+ \begin{split}
+ M_z^{\rm ss}&=\frac{M_0(1+\Delta\omega^2T_2^2)}
+ {1+\Delta\omega^2T_2^2+\omega_1^2T_1T_2},\\
+ M_y^{\rm ss}&=\frac{M_0\omega_1T_2}
+ {1+\Delta\omega^2T_2^2+\omega_1^2T_1T_2},\qquad
+ M_x^{\rm ss}=\Delta\omega T_2M_y^{\rm ss}.
+ \end{split}
+ \label{eq:03:cw}
+\end{equation}
+First use $M_x=\Delta\omega T_2M_y$, then
+$M_y=\omega_1T_2M_z/(1+\Delta\omega^2T_2^2)$, and finally longitudinal
+balance. Large resonant drive saturates $M_z$ rather than aligning it
+with the effective field. Off-resonance reduces saturation.
+
 \subsection{Numerical integration and operator splitting}
+Piecewise-constant waveform intervals can be propagated by augmented
+matrix exponentials. For smooth waveforms, a midpoint approximation to
+the generator is second order when the waveform is sufficiently resolved.
+Alternatively, split torque and relaxation:
+$\mathcal P(h)\approx\mathcal R(h/2)\mathcal U(h)\mathcal R(h/2)$,
+where $\mathcal U$ is an exact rotation and $\mathcal R$ exact affine
+relaxation. This symmetric splitting has local error $O(h^3)$,
+global error $O(h^2)$ for smooth bounded generators.
+Applying a whole relaxation step and then a whole RF step is generally
+only first order.
+
+The laboratory carrier may require extremely small integration steps.
+A valid rotating-wave model removes this fast scale, leaving RF envelope,
+detuning and gradient timescales. Removing the carrier is a physical
+approximation for a linear RF drive; numerical speed does not establish
+its validity.
+
 \subsection{Accuracy, stability and conservation checks}
+A forward-Euler precession update multiplies a transverse amplitude by
+$1-\ii\omega h$, whose magnitude exceeds one.
+It artificially increases magnetization even if $h$ is small.
+An exact rotation preserves length to roundoff and is a more informative
+baseline than merely observing that a curve looks smooth.
+
+A simulator should reproduce recovery, free precession, ideal inversion
+and static-offset refocusing, conserve length without relaxation, and
+converge under step halving. Tests must include noncommuting pulse axes
+and finite detuning. A waveform raster is an input representation, not
+automatically a sufficiently accurate integration step.
 
 \section{Beyond independent stationary spins}
 \label{sec:03:beyond-independent-stationary-spins}
 \subsection{Bloch--Torrey transport and diffusion}
+Magnetization density obeys a continuity equation.
+With advective velocity $\vect v$ and Fickian diffusion tensor $\mat D$,
+the transport contribution is
+$-\nabla\cdot(\vect v\vect M)+\nabla\cdot(\mat D\nabla\vect M)$,
+applied componentwise. For incompressible flow and constant isotropic $D$,
+\begin{equation}
+ \partial_t\vect M+\vect v\cdot\nabla\vect M
+ =\gamma\vect M\times\vect B-\mat R(\vect M-M_0\vect e_z)
+      +D\nabla^2\vect M ,
+ \label{eq:03:torrey}
+\end{equation}
+where $\mat R=\diag(R_2,R_2,R_1)$.
+These diffusion terms generalize Bloch dynamics \cite{torrey1956}.
+Their boundary conditions matter: reflecting walls impose zero normal
+diffusive flux, whereas absorbing or permeable boundaries give different
+signals.
+
+For a spatial transverse harmonic $\ee^{-\ii\vect q\cdot\vect r}$,
+the Laplacian gives $-q^2$ times the harmonic, so diffusion attenuates
+it at rate $Dq^2$. With a time-varying angular wavevector,
+the attenuation is $\exp[-D\int q(t)^2\dd t]$ in the free-diffusion,
+linear-gradient model. The units $Dq^2$ are inverse seconds.
+This connects phase gradients to diffusion sensitivity without
+identifying reversible static dephasing with diffusion loss.
+
 \subsection{Bloch--McConnell exchange structure}
+For two pools with common volume convention, exchange adds
+\[
+ \dot{\vect M}_a\big|_{\rm ex}=-k_{ab}\vect M_a+k_{ba}\vect M_b,\qquad
+ \dot{\vect M}_b\big|_{\rm ex}=+k_{ab}\vect M_a-k_{ba}\vect M_b .
+\]
+The rates have units of inverse time, and exchange conserves total
+magnetization instantaneously. At equilibrium detailed population
+balance requires $k_{ab}M_{0a}=k_{ba}M_{0b}$.
+Each pool also has its own Bloch generator and possibly offset.
+The resulting coupled affine system can be propagated as a larger matrix.
+Its measured decay rates are eigenmodes of the coupled system, not
+necessarily either pool's intrinsic $R_1$ or $R_2$
+\cite{mcconnell1958}.
+
 \subsection{Where phenomenology requires microscopic input}
+Relaxation parameters summarize the spectrum of fluctuating interactions;
+exchange parameters summarize transport or chemical kinetics.
+Neither can be inferred uniquely from one decay curve without a model.
+The same apparent exponential may result from homogeneous relaxation,
+fast exchange, or a restricted observation interval of a multiexponential.
+Sequence variation, field dependence and preparation dependence provide
+additional constraints. The role of a more detailed model is to predict
+those changes, not merely to fit more coefficients.
 
 \section{Worked examples}
 \label{sec:03:worked-examples}
-% Planned calculations: Longitudinal recovery, transverse decay and an inhomogeneous ensemble.
 \subsection{Derivation and quantitative calculation}
+\begin{workedexample}[Recovery and an imperfect inversion null]
+Let $T_1=\SI{1.2}{\second}$. Saturation recovery at
+$t=\SI{0.6}{\second}$ gives $M_z/M_0=1-\ee^{-0.5}=0.3935$.
+Perfect inversion nulls at \SI{0.8318}{\second}.
+If the initial value is $-0.9M_0$, the null instead occurs at
+$1.2\ln1.9=\SI{0.7702}{\second}$. Using the perfect-inversion formula
+to infer $T_1$ would underestimate it.
+\end{workedexample}
+\begin{workedexample}[An FID and a refocused echo]
+Let $T_2=\SI{80}{\milli\second}$ and Gaussian static offset standard
+deviation $\sigma_f=\SI{20}{\hertz}$, so $\sigma_\omega=2\pi\sigma_f$.
+At \SI{20}{\milli\second}, the FID envelope is
+$\exp[-0.02/0.08-(2\pi20\cdot0.02)^2/2]=0.0331$.
+An ideal echo at \SI{40}{\milli\second} has amplitude
+$\exp(-0.04/0.08)=0.6065$.
+Signal can therefore increase between the dephased interval and the echo
+without any reversal of $T_2$ relaxation.
+\end{workedexample}
 \subsection{Assumptions, limiting cases and scanner interpretation}
+\begin{workedexample}[Continuous-wave saturation]
+Take $T_1=\SI{1}{\second}$, $T_2=\SI{0.1}{\second}$ and
+$\omega_1=\SI{10}{\radian\per\second}$.
+On resonance $\omega_1^2T_1T_2=10$ and
+$M_z^{\rm ss}/M_0=M_y^{\rm ss}/M_0=1/11$.
+At $\Delta\omega=\SI{100}{\radian\per\second}$,
+the denominator is 111:
+$M_z/M_0=101/111$, $M_y/M_0=1/111$ and $M_x/M_0=10/111$.
+The dispersive and absorptive components differ; a magnitude-only
+measurement suppresses their sign information.
+\end{workedexample}
 
 \section{Challenge problems}
 \label{sec:03:challenge-problems}
-% Problem design: Solve a piecewise field history; distinguish static dephasing from irreversible loss.
-% Use challengeproblem and stable labels prob:03:<topic>.
-% Complete solutions belong in Appendix E, section for this chapter.
-% Use \begin{solution}{prob:03:<topic>} ... \end{solution} there.
 \subsection{Derivation and quantitative design}
+\begin{challengeproblem}[Repeated pulses and a fixed point]
+\label{prob:03:steady}
+Identical instantaneous flips $\alpha$ are separated by TR.
+Assume all transverse magnetization is spoiled before the next pulse.
+Derive the recurrence for pre-pulse $M_z$, its steady state and transient
+after $n$ repetitions. Derive the flip angle maximizing immediate
+transverse signal, and state when that optimization does not maximize CNR.
+\end{challengeproblem}
+\begin{challengeproblem}[An echo with changing offsets]
+\label{prob:03:echo}
+An isochromat has offset $\delta_1$ for $0<t<\tau$ and $\delta_2$
+for $\tau<t<2\tau$. Derive its echo after a phase-$\phi$ ideal
+$\pi$ pulse. If $\delta_1,\delta_2$ are jointly zero-mean Gaussian
+with variance $\sigma_\omega^2$ and correlation $c$, find ensemble
+echo attenuation and analyze $c=1,0,-1$.
+\end{challengeproblem}
+\begin{challengeproblem}[An exchange-conserving mode]
+\label{prob:03:exchange}
+Two equal pools have transverse rate $R_2$, identical offsets and
+symmetric exchange rate $k$. Diagonalize their transverse evolution.
+Which modes and rates are measured by equal receive weighting?
+What changes if their initial transverse phases differ by $\pi$?
+\end{challengeproblem}
 \subsection{Model criticism and integrated reasoning}
+\begin{challengeproblem}[A fitted T2-star is acquisition-dependent]
+\label{prob:03:fit}
+For $S(t)=S_0\exp[-R_2t-\sigma_\omega^2t^2/2]$,
+derive the rate obtained from the line through two log-signal samples
+at $t_1,t_2$. Given rates \SI{40}{\per\second} from $(5,15)$ ms
+and \SI{60}{\per\second} from $(15,25)$ ms, infer $R_2$ and
+$\sigma_\omega$. Predict an ideal echo at 40 ms.
+\end{challengeproblem}
+\begin{challengeproblem}[A simulator that creates magnetization]
+\label{prob:03:euler}
+Quantify the magnitude after $N$ Euler steps of free precession with
+step $h$ and total time $t=Nh$. Find its small-$h$ relative error.
+Compare with an exact rotation and explain why applying relaxation
+after each Euler step can hide, but not repair, the error.
+\end{challengeproblem}

@@ -1,59 +1,251 @@
-% Scope: Derive spatial phase accumulation and trajectory geometry, with sampling definitions separated from effective resolution.
-% Status: architecture only; no chapter prose or completed problems yet.
+% Scope: Derive spatial phase, trajectory geometry, sampling and gradient constraints.
+% Status: completed foundational chapter.
 % Prerequisites: Chapters 1, 3 and 4.
-% Planned worked examples: Slice thickness, gradient strength, FOV, k-space extent and pixel spacing.
-% Planned figures: Slice selection, Cartesian, radial, spiral and EPI trajectories.
-% Planned challenge problems: Design a constrained Cartesian readout; expose a zero-filling resolution fallacy.
+% Planned figures: Encoding and trajectory geometry (implemented).
+% Planned challenge problems: Gradient design, motion, radial sampling and nonlinear encoding (implemented).
 \chapter{Spatial Encoding and k-Space}
 \label{ch:05}
-
 \section{Gradient fields and spatial phase}
 \label{sec:05:gradient-fields-and-spatial-phase}
 \subsection{Linear field expansion and gradient units}
+A gradient coil changes the longitudinal field approximately linearly within a specified imaging volume:
+\begin{equation}
+ B_z(\vect r,t)=B_0+\vect G(t)\cdot\vect r+\Delta B_0(\vect r).
+ \label{eq:05:field}
+\end{equation}
+Here \(\vect G=\nabla B_z\) has units \(\si{\tesla\per\metre}\).
+This is a local expansion, not a globally realizable magnetic field with arbitrary vanishing transverse components. Maxwell's equations impose additional components, discussed below. Gradient strength limits the speed through spatial-frequency space; slew rate \(\norm{\dot{\vect G}}\), measured in \(\si{\tesla\per\metre\per\second}\), limits how quickly that speed can change. Neither is itself a resolution.
+
 \subsection{Phase accumulation and trajectory origin}
+In the rotating frame and between RF pulses, the Bloch equation gives
+\begin{equation}
+ M_+(\vect r,t)=M_+(\vect r,t_0)
+ \exp\left[-\int_{t_0}^t R_2\,\dd u\right]
+ \exp\left[-\ii\gamma\int_{t_0}^t
+   \{\vect G(u)\cdot\vect r+\Delta B_0(\vect r)\}\,\dd u\right].
+\end{equation}
+Factoring the linear spatial phase defines
+\begin{equation}
+ \vect k(t)=\vect k(t_0)+\gammabar\int_{t_0}^t\vect G(u)\,\dd u,
+ \qquad M_+\ \propto\ \ee^{-\ii2\pi\vect k(t)\cdot\vect r}.
+ \label{eq:05:trajectory}
+\end{equation}
+Thus \(k\) is measured in cycles per metre, whereas the corresponding angular wave vector is \(2\pi\vect k\). The initial value includes all preceding gradient phase on the coherence being observed. Resetting a numerical integrator at ADC start does not reset the spins. Imaging by spatially varying resonance frequencies originates in Lauterbur's work \cite{lauterbur1973}; the phase formulation makes clear why encoding can continue after a gradient has ended.
+
 \subsection{Refocusing pulses and effective gradient signs}
+An ideal transverse \(\pi\) pulse of phase \(\phi\) maps
+\(M_+\mapsto\ee^{2\ii\phi}M_+^*\). Consequently a pre-existing factor
+\(\ee^{-\ii2\pi\vect k\cdot\vect r}\) becomes its conjugate: the coherence's wave vector changes sign. If gradient areas before and after that pulse are \(\vect A_1,\vect A_2\), a coherence initially uniform reaches
+\begin{equation}
+ \vect k_{\mathrm{echo}}=\gammabar(\vect A_2-\vect A_1).
+ \label{eq:05:refocusing}
+\end{equation}
+Equal physical areas therefore balance this pathway. Without the RF pulse, opposite areas would be required. For multiple pulses one must track the coherence and its conjugations; a signed effective gradient describes one chosen pathway, not every stimulated echo simultaneously.
 
 \section{Slice selection and partition encoding}
 \label{sec:05:slice-selection-and-partition-encoding}
 \subsection{Frequency-to-position mapping}
+During a constant slice gradient \(G_z\), the resonance offset is
+\(\Delta f(z)=\gammabar G_z z+\Delta f_0(z)\).
+A pulse centered at frequency offset \(f_c\) excites positions satisfying this relation near \(f_c\). In the small-tip approximation its spectral profile maps to a spatial profile, giving the nominal width
+\begin{equation}
+ \Delta z=\frac{\mathrm{BW}_{\mathrm{RF}}}{\gammabar |G_z|},
+ \qquad z_c=\frac{f_c}{\gammabar G_z}
+ \quad(\Delta f_0=0).
+\end{equation}
+Bandwidth must be defined consistently, for example as a passband width, not mixed with the full width of a different profile measure. A uniform off-resonance shifts the selected slice by
+\(-\Delta f_0/(\gammabar G_z)\). This sign differs from the apparent displacement in a frequency-encoded reconstructed image: selection asks where the spins actually resonated, whereas reconstruction assigns positions from measured frequencies.
+
 \subsection{Slice rephasing and finite pulse duration}
+The small-tip integral in \cref{ch:04} contains the phase accrued between each instant of excitation and pulse end. For a real, symmetric pulse of duration \(T\) under a constant gradient, this integral factors into a real spectral profile and
+\(\ee^{-\ii\gamma G_z zT/2}\). A following area \(-G_zT/2\) cancels that linear phase. The half-area rule follows from temporal symmetry and the small-tip model; an asymmetric pulse or a large-tip pulse requires a Bloch calculation of the excitation phase. Gradient ramps contribute their actual areas and cannot be discarded simply because the RF is off.
+
 \subsection{Two-dimensional slices versus three-dimensional slabs}
+A two-dimensional acquisition measures an integral through the excited profile:
+\[
+ f_{\mathrm{2D}}(x,y)=\int c(x,y,z)m(x,y,z)\,p(z)\,\dd z,
+\]
+when the through-plane weighting can be separated as \(p\).
+The slice thickness is therefore an excitation property, not an inverse-transform pixel width. In a three-dimensional acquisition a slab is excited and an additional series of \(k_z\) values resolves position through the slab. Excitation still limits support, but partition spacing, aperture and reconstruction determine through-plane sampling and the associated point-spread function.
+
+\begin{figure}[tb]
+\centering
+\input{figures/tikz/05_encoding}
+\caption{A linear gradient converts position into frequency and gradient area into phase slope. The phase wraps shown are not boundaries between independent voxels.}
+\label{fig:05:encoding}
+\end{figure}
 
 \section{Frequency and phase encoding}
 \label{sec:05:frequency-and-phase-encoding}
 \subsection{Readout gradients and dwell time}
+For a constant readout gradient and complex samples separated by \(\Delta t\),
+\begin{equation}
+ \Delta k_x=\gammabar G_x\Delta t,\qquad
+ L_x=\frac{1}{|\Delta k_x|},\qquad
+ \mathrm{BW}_{\mathrm{total}}=\frac{1}{\Delta t}.
+ \label{eq:05:readout}
+\end{equation}
+The total bandwidth here is the full complex Nyquist interval, conventionally
+\([-1/(2\Delta t),1/(2\Delta t))\), not its positive half. With \(N_x\) samples the nominal pixel spacing is \(L_x/N_x\) and bandwidth per pixel is \(1/(N_x\Delta t)\). Scanner bandwidth labels can use different conventions, so converting a console number requires its definition.
+
 \subsection{Phase-encoding steps and Cartesian grids}
+A short gradient lobe of area \(A_y\) establishes
+\(k_y=\gammabar A_y\); after the lobe, that phase remains while the readout traverses \(k_x\).
+Cartesian sampling uses \(k_y=n_y/L_y\), hence adjacent lobes differ in area by
+\begin{equation}
+ \Delta A_y=\frac{1}{\gammabar L_y}.
+\end{equation}
+For even \(N_y\), one convenient index set is
+\(n_y=-N_y/2,\ldots,N_y/2-1\). It includes the negative Nyquist endpoint but excludes the equivalent positive endpoint. Changing indexing convention changes phase factors and array ordering, not physical information. Each phase-encoding line must represent the intended magnetization state, which is why preparation history and repetition time matter even in a nominally Fourier experiment.
+
 \subsection{Echo position and prephasing}
+A prephasing lobe sets \(k_x=-K_x\) before a positive constant readout. The trajectory reaches zero after \(K_x/(\gammabar G_x)\). This crossing removes the imposed linear gradient phase of stationary spins. It does not reverse arbitrary static field offsets as a spin echo does. The resulting gradient echo can therefore retain substantial \(T_2^*\) attenuation.
+For \(N\) uniformly spaced samples, the time between first and last sample centers is \((N-1)\Delta t\), while the usual acquisition-window convention is \(N\Delta t\). Half-dwell endpoints must be specified in a pulse sequence rather than inferred from a plotted echo center.
 
 \section{Sampling geometry}
 \label{sec:05:sampling-geometry}
 \subsection{Field of view and k-space spacing}
+Let \(F(k)\) be the Fourier transform of \(f(x)\) under \cref{ch:01}'s convention. Sampling at \(k=n/L\) and forming the infinite Fourier series gives
+\begin{align}
+ f_{\mathrm{per}}(x)
+ &=\frac1L\sum_{n\in\mathbb Z}F(n/L)\ee^{\ii2\pi nx/L}\\
+ &=\sum_{\ell\in\mathbb Z}f(x+\ell L).
+ \label{eq:05:periodization}
+\end{align}
+To see the second equality, insert the forward integral and use the distributional comb identity
+\(L^{-1}\sum_n\ee^{\ii2\pi n(x-u)/L}=\sum_\ell\delta(x-u-\ell L)\).
+Thus the sampling interval fixes the distance between object replicas. If the object, including receive-weighted excited tissue, extends outside one period, its contributions fold into that period. Declaring a smaller display rectangle does not prevent folding.
+
 \subsection{Finite extent, nominal resolution and voxel grid}
+For an even Cartesian grid with interval \(\Delta k\), define a nominal aperture width \(2K=N\Delta k\). The nominal pixel width is
+\begin{equation}
+ \Delta x=\frac{1}{N\Delta k}=\frac{1}{2K}.
+\end{equation}
+The distance between the extreme sample centers is only \((N-1)\Delta k\); confusing it with the aperture convention introduces a finite-\(N\) error. Actual resolution also depends on weighting, motion, decay, reconstruction and the criterion used to separate objects. The rectangular continuous aperture has a sinc point-spread function with sidelobes, not a rectangular voxel response. A voxel grid is a representation of the reconstructed function.
+
 \subsection{Nyquist sampling, aliasing and zero filling}
+Reducing the spacing while keeping aperture fixed enlarges the unaliased field of view. Extending the aperture at fixed spacing improves nominal spatial resolution. These are independent operations. Zero filling creates neither operation: it evaluates the same finite Fourier series on a denser grid. The interpolation may reveal the existing point-spread function more clearly, but no new high-frequency measurements have been made. Support constraints or other priors can sometimes recover missing information; their validity is an additional assumption and not a property of the zero-padding operation.
 
 \section{Trajectory families and ordering}
 \label{sec:05:trajectory-families-and-ordering}
 \subsection{Cartesian and echo-planar trajectories}
+Conventional Cartesian imaging collects separate lines across repetitions; echo-planar imaging (EPI) traverses many lines in one excitation by alternating readout polarity and stepping \(k_y\). Its speed trades against a long train with phase evolution. In a simplified rectified grid with line spacing \(\Delta k_y\) and echo spacing \(T_{\mathrm{esp}}\),
+\[
+ t(k_y)=t_c+\frac{T_{\mathrm{esp}}}{\Delta k_y}k_y.
+\]
+Uniform off-resonance contributes a phase
+\(\ee^{-\ii2\pi\Delta f T_{\mathrm{esp}}k_y/\Delta k_y}\), so Fourier inversion displaces the object by
+\begin{equation}
+ \Delta y=\frac{\Delta f T_{\mathrm{esp}}}{\Delta k_y}.
+ \label{eq:05:epi}
+\end{equation}
+Reversing the phase-encoding traversal reverses the sign. This simplified expression omits within-line evolution and odd/even echo inconsistencies; those produce additional effects. With acceleration factor \(R\) at prescribed field of view \(L_y\), adjacent acquired lines are separated by \(R/L_y\), not \(1/L_y\).
+
 \subsection{Radial and spiral sampling}
+Radial acquisitions sample lines through the origin. Their repeated central measurements do not compensate automatically for sparse peripheral coverage. For \(N_\theta\) full spokes over \([0,\pi)\), angular spacing is approximately \(\pi/N_\theta\). Requiring the outer arc spacing \(K\pi/N_\theta\) to be no larger than \(1/L\) gives
+\begin{equation}
+ N_\theta\gtrsim\pi KL=\frac{\pi N}{2}.
+ \label{eq:05:radial}
+\end{equation}
+This is a geometric Nyquist estimate for a circular aperture and arbitrary objects, not an exact guarantee for every gridding kernel.
+A spiral \(\vect k=\kappa(\cos\theta,\sin\theta)\) obeys
+\[
+ \sqrt{\dot\kappa^2+\kappa^2\dot\theta^2}\leq\gammabar G_{\max},
+ \qquad \norm{\ddot{\vect k}}\leq\gammabar S_{\max}.
+\]
+The second inequality constrains curvature as well as outward acceleration. Nonuniform sampling also requires an appropriate inverse problem or quadrature; plotting a spiral and applying an ordinary Cartesian inverse FFT is not an inversion.
+
+\begin{figure}[tb]
+\centering
+\input{figures/tikz/05_trajectories}
+\caption{Cartesian, radial and spiral sampling in the same spatial-frequency plane. Arrows indicate traversal, whereas the sampling density determines which frequencies are actually constrained.}
+\label{fig:05:trajectories}
+\end{figure}
+
 \subsection{Linear, centric and interleaved view ordering}
+If preparation produces a common amplitude \(a(t)\), the measured datum at \(\vect k_j\) is \(a(t_j)F(\vect k_j)\). Ordering therefore assigns a modulation to spatial frequency and changes the point-spread function. Centric ordering records low frequencies early; linear ordering passes through the center at an intermediate time; interleaving redistributes temporal changes. When different tissues have different time courses, there is no single object-independent multiplier \(a(t)\) and hence no single global convolution kernel. This is the origin of contrast-dependent blurring in many echo trains.
 
 \section{Gradient moments and trajectory fidelity}
 \label{sec:05:gradient-moments-and-trajectory-fidelity}
 \subsection{Zeroth and higher moments}
+For one pathway let \(\vect g_{\mathrm{eff}}\) include the RF conjugation signs, and expand a trajectory about the observation time \(t_e\):
+\(\vect r(t)=\vect r_e+\vect v(t-t_e)+\vect a(t-t_e)^2/2+\cdots\).
+Then
+\begin{equation}
+ \phi=-\gamma\left(\vect r_e\cdot\vect{\mathcal M}_0+
+ \vect v\cdot\vect{\mathcal M}_1+
+ \tfrac12\vect a\cdot\vect{\mathcal M}_2+\cdots\right),\qquad
+ \vect{\mathcal M}_j=\int\vect g_{\mathrm{eff}}(t)(t-t_e)^j\,\dd t.
+ \label{eq:05:moments}
+\end{equation}
+The moment has units \(\si{\tesla}\,\mathrm{s}^{j+1}/\mathrm m\); each phase term is dimensionless. Zeroth-moment balance refocuses stationary spins, while first-moment balance also refocuses constant velocity. Higher moments depend on the time origin unless lower moments vanish. A first moment alone is therefore incomplete without its reference time and zeroth moment.
+
 \subsection{Gradient delays and eddy-current errors}
+If \(G_{\mathrm{actual}}(t)=G_{\mathrm{command}}(t-\delta t)\), a first-order expansion yields
+\[
+ \delta k(t)\simeq-\gammabar\delta t\{G(t)-G(t_0)\}
+\]
+when both trajectories share the same initial value at \(t_0\).
+A constant delay has different consequences at opposite readout polarities and during ramps. More generally a linear response model writes each actual gradient as a convolution of commanded gradients with impulse responses, including cross-axis terms. Errors in \(\vect k(t)\) then produce position-dependent phase errors. Calibration of sample times and actual fields is part of the forward model, not merely a cosmetic correction to image coordinates.
+
 \subsection{Concomitant fields and nonlinear encoding}
+For an idealized \(x\) gradient a source-free local field can be
+\(\vect B=(G_xz,0,B_0+G_xx)\). It is both divergence-free and curl-free.
+Expanding its magnitude for \(|G_xr|\ll B_0\) gives
+\[
+ |\vect B|\simeq B_0+G_xx+\frac{G_x^2z^2}{2B_0}.
+\]
+The quadratic term survives despite a perfectly commanded gradient and is not represented by a linear trajectory. Coil nonlinearity can likewise replace \(x\) by a spatial encoding coordinate \(b(x)\). If that map is invertible, the reconstructed density in \(b\)-space carries the inverse Jacobian. If it is not one-to-one, multiple physical locations encode identically and geometry correction alone cannot separate them.
 
 \section{Worked examples}
 \label{sec:05:worked-examples}
-% Planned calculations: Slice thickness, gradient strength, FOV, k-space extent and pixel spacing.
 \subsection{Derivation and quantitative calculation}
+\begin{workedexample}[A Cartesian readout budget]
+Take \(L_x=\SI{240}{\milli\metre}\), \(N_x=256\), and \(\Delta t=\SI{4}{\micro\second}\).
+Then \(\Delta k_x=\SI{4.1667}{\per\metre}\),
+\(G_x=\SI{24.465}{\milli\tesla\per\metre}\),
+\(\Delta x=\SI{0.9375}{\milli\metre}\), and the window is \(\SI{1.024}{\milli\second}\).
+The full bandwidth is \(\SI{250}{\kilo\hertz}\), or \(\SI{976.56}{\hertz}\) per pixel.
+Starting at \(k_x=-N_x/(2L_x)\) requires a prephaser area
+\(-\SI{12.526}{\micro\tesla\second\per\metre}\).
+For the same phase FOV, neighboring phase lobes differ by
+\(\SI{0.097861}{\micro\tesla\second\per\metre}\).
+These are areas, not peak strengths; waveform duration must still satisfy slew constraints.
+\end{workedexample}
+
 \subsection{Assumptions, limiting cases and scanner interpretation}
+\begin{workedexample}[EPI distortion]
+Let \(L_y=\SI{220}{\milli\metre}\), \(N_y=128\), \(T_{\mathrm{esp}}=\SI{0.6}{\milli\second}\), and \(\Delta f=\SI{100}{\hertz}\).
+Without acceleration, \cref{eq:05:epi} gives \(\Delta y=\SI{13.2}{\milli\metre}\), or \(7.68\) nominal pixels.
+The large displacement follows from the slow progression through phase-encoding frequency. It need not imply a large shift in a conventional fast readout.
+If the acquired line spacing doubles while echo spacing stays fixed, this contribution halves. That comparison holds other quantities fixed and does not include reconstruction noise amplification.
+\end{workedexample}
 
 \section{Challenge problems}
 \label{sec:05:challenge-problems}
-% Problem design: Design a constrained Cartesian readout; expose a zero-filling resolution fallacy.
-% Use challengeproblem and stable labels prob:05:<topic>.
-% Complete solutions belong in Appendix E, section for this chapter.
-% Use \begin{solution}{prob:05:<topic>} ... \end{solution} there.
 \subsection{Derivation and quantitative design}
+\begin{challengeproblem}[Constrained readout]\label{prob:05:readout}
+Design a \(256\)-sample readout with \(L=\SI{256}{\milli\metre}\) and dwell time \(\SI{5}{\micro\second}\).
+Calculate gradient, pixel width, bandwidth per pixel and area to start at \(-N/(2L)\).
+A separate prephaser starts and ends at zero gradient, with \(G_{\max}=\SI{40}{\milli\tesla\per\metre}\) and \(S_{\max}=\SI{150}{\tesla\per\metre\per\second}\).
+Derive its minimum duration, deciding whether a triangle or trapezoid is required. Ignore hardware raster constraints.
+\end{challengeproblem}
+\begin{challengeproblem}[Balanced area and moving spins]\label{prob:05:balance}
+Two narrow lobes of equal area \(A\), at times \(t_1<t_2\), straddle an ideal \(\pi\) pulse.
+For \(x(t)=x_0+vt\), derive the residual phase and interpret its velocity sensitivity.
+Would reversing the second physical lobe produce flow compensation?
+\end{challengeproblem}
+\begin{challengeproblem}[Radial coverage]\label{prob:05:radial}
+For nominal matrix width \(256\), estimate the full-spoke count needed to cover a circular aperture.
+With only \(200\) uniformly spaced spokes, estimate the radius inside which the angular Nyquist condition holds and express its implied resolution relative to the target pixel width. State why the estimate is not a universal image-quality threshold.
+\end{challengeproblem}
 \subsection{Model criticism and integrated reasoning}
+\begin{challengeproblem}[EPI line spacing]\label{prob:05:epi}
+Derive \cref{eq:05:epi} from the Fourier shift theorem. Repeat the worked example for acceleration \(R=2\), retaining the prescribed \(220\)-mm FOV and \(128\)-pixel reconstruction.
+Explain the sign after reversing phase-encoding order and why using the reconstructed grid spacing as the acquired line spacing is wrong.
+\end{challengeproblem}
+\begin{challengeproblem}[A nonlinear coordinate]\label{prob:05:nonlinear}
+Suppose \(s(k)=\int_{-L/2}^{L/2}f(x)\ee^{-\ii2\pi k b(x)}\,\dd x\), where \(b(x)=x+\epsilon x^2/L\).
+Find the function obtained by ideal Fourier inversion in \(k\). Determine a sufficient condition for a nonsingular one-to-one encoding map across the closed interval.
+Explain why relabeling the image coordinate alone does not recover \(f\).
+\end{challengeproblem}

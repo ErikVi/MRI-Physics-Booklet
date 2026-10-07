@@ -1,53 +1,377 @@
-% Scope: Establish exact frame transformations and RF phase conventions before treating excitation, inversion and selective pulses.
-% Status: architecture only; no chapter prose or completed problems yet.
-% Prerequisites: Chapters 2 and 3.
-% Planned worked examples: Rotating-frame transformation and flip angle of a rectangular RF pulse.
-% Planned figures: Laboratory and rotating axes; effective-field trajectories.
-% Planned challenge problems: Derive a detuned pulse propagator; debug a factor-of-two RF amplitude error.
+% Scope: Exact rotating-frame transformations, RF conventions and selective excitation.
+% Status: foundational chapter with hard-pulse and small-tip derivations.
+% Prerequisites: Chapters 1 through 3.
+% Planned figures: Implemented effective-field geometry and selective-pulse response.
+% Planned challenge problems: Implemented; solutions are in Appendix E.
 \chapter{RF Excitation and the Rotating Frame}
 \label{ch:04}
+
+At 3 T, a proton's laboratory-frame precession is near 128 MHz while a
+millisecond RF pulse may tip its ensemble magnetization by only a quarter
+turn. A rotating frame separates these timescales and exposes the small
+field that drives the tip. It is a coordinate transformation, not the
+physical elimination of the main magnetic field.
+A consistent treatment must transform the coordinates, the Hamiltonian,
+the RF phase and the detected signal together.
 
 \section{Rotating coordinate systems}
 \label{sec:04:rotating-coordinate-systems}
 \subsection{Active rotations versus passive coordinates}
+Let $R_z(\theta)$ actively rotate a real vector counterclockwise about $+z$
+according to the right-hand rule. Choose rotating basis vectors whose
+laboratory columns form
+$\mat Q(t)=R_z(-\omega_{\rm RF}t)$.
+For a fixed physical vector,
+$\vect M_{\rm lab}=\mat Q\vect M_{\rm rot}$ and thus
+$\vect M_{\rm rot}=R_z(+\omega_{\rm RF}t)\vect M_{\rm lab}$.
+Therefore
+$M_+^{\rm rot}=\ee^{+\ii\omega_{\rm RF}t}M_+^{\rm lab}$.
+A spin freely precessing at $\omega_0=\omega_{\rm RF}$ is stationary
+in these coordinates. The axes rotate clockwise; their inverse
+coordinate transformation has the opposite sign.
+
 \subsection{Transformation of time derivatives}
+Differentiate $\vect M_{\rm lab}=\mat Q\vect M_{\rm rot}$:
+\[
+ \dot{\vect M}_{\rm rot}
+ =\gamma\vect M_{\rm rot}\times
+    \left(\vect B_{\rm rot}-\frac{\omega_{\rm RF}}{\gamma}\vect e_z\right)
+       -\mat R(\vect M_{\rm rot}-M_0\vect e_z).
+\]
+The relaxation tensor remains unchanged under rotations about $z$
+because its transverse eigenvalues are equal.
+
+The quantum transformation provides an independent sign check.
+Set $\ket{\psi_{\rm rot}}=W\ket{\psi_{\rm lab}}$ with
+$W=\exp(-\ii\omega_{\rm RF}t\sigma_z/2)$.
+Then
+\begin{equation}
+ \op H_{\rm rot}=W\op H_{\rm lab}W^\dagger+
+                      \ii\hbar\dot W W^\dagger
+                =W\op H_{\rm lab}W^\dagger+
+                      \frac{\hbar\omega_{\rm RF}}2\sigma_z .
+ \label{eq:04:frame}
+\end{equation}
+Combining this term with $-\hbar\omega_0\sigma_z/2$ gives
+$-\hbar(\omega_0-\omega_{\rm RF})\sigma_z/2$, in agreement with
+the vector transformation. Keeping only $W\op H W^\dagger$ would
+omit the essential frame term.
+
 \subsection{Detuning and the effective field}
+Define $\Delta\omega=\gamma B_z-\omega_{\rm RF}$.
+For a co-rotating transverse field
+$B_a(\cos\phi\,\vect e_x+\sin\phi\,\vect e_y)$, the effective field is
+\begin{equation}
+ \vect B_{\rm eff}
+  =B_a\cos\phi\,\vect e_x+B_a\sin\phi\,\vect e_y+
+               \frac{\Delta\omega}{\gamma}\vect e_z .
+ \label{eq:04:effective}
+\end{equation}
+Its direction controls the rotation axis, and
+$\Omega=\gamma\norm{\vect B_{\rm eff}}
+=\sqrt{\omega_1^2+\Delta\omega^2}$ controls the angular rotation rate,
+with $\omega_1=\gamma B_a$ for protons.
+Resonance makes the axis transverse. Detuning tilts it toward $z$;
+a pulse calibrated on resonance therefore does not have a universal
+flip angle across a heterogeneous field.
+
+\begin{figure}[tb]
+ \centering\input{figures/tikz/04_effective}
+ \caption{The effective field combines a transverse drive and a longitudinal
+ detuning. The rotation angle is $-\Omega t$, consistent with
+ $\dot{\vect M}=\gamma\vect M\times\vect B_{\rm eff}$.
+ A hard pulse refers to negligible variation and competing dynamics
+ during its action, not merely to a rectangular waveform.}
+ \label{fig:04:effective}
+\end{figure}
 
 \section{Circular RF components}
 \label{sec:04:circular-rf-components}
 \subsection{Real fields and complex phasors}
+Write the physical transverse field as
+$\vect B_{\rm RF}(t)=\operatorname{Re}\{
+(b_x\vect e_x+b_y\vect e_y)\ee^{-\ii\omega_{\rm RF}t}\}$.
+Here $b_x,b_y$ are slowly varying complex envelopes in tesla.
+Then
+\[
+ B_x+\ii B_y=
+ \tfrac12(b_x+\ii b_y)\ee^{-\ii\omega_{\rm RF}t}
+ +\tfrac12(b_x^*+\ii b_y^*)\ee^{+\ii\omega_{\rm RF}t}.
+\]
+Both terms are necessary to represent a real physical field.
+Their amplitudes need not be equal for elliptical or circular polarization.
+
 \subsection{Co-rotating B1-plus and counter-rotating fields}
+Define $\Btx=(b_x+\ii b_y)/2$ and, for this decomposition only,
+$B_{\rm ctr}=(b_x-\ii b_y)/2$.
+The previous equation becomes
+$\Btx\ee^{-\ii\omega_{\rm RF}t}+B_{\rm ctr}^*
+\ee^{+\ii\omega_{\rm RF}t}$.
+After rotating coordinates, the first term is stationary and the second
+oscillates at $2\omega_{\rm RF}$.
+This explicit definition avoids ambiguities from phasor conventions in
+RF engineering literature.
+
+For clockwise circular polarization,
+$b_x=B_a$, $b_y=-\ii B_a$, so $\Btx=B_a$ and $B_{\rm ctr}=0$.
+For linear polarization along $x$ with peak $B_{\rm pk}$,
+$\Btx=B_{\rm ctr}=B_{\rm pk}/2$.
+The factor of two is not an efficiency correction applied after
+calculating a flip: it is part of the field that actually drives the
+near-resonant rotation.
+
 \subsection{Linear polarization and the rotating-wave approximation}
+If $\omega_1$, $\abs{\Delta\omega}$ and envelope variation rates are
+small compared with $\omega_{\rm RF}$, the rapidly oscillating term has
+little accumulated first-order effect. Dropping it gives
+\[
+ \op H_{\rm rot}\simeq-\frac{\hbar}{2}
+ [\Delta\omega\sigma_z+\gamma\operatorname{Re}\Btx\,\sigma_x+
+                              \gamma\operatorname{Im}\Btx\,\sigma_y].
+\]
+A fast oscillatory perturbation can still produce second-order effects
+with frequency scale $\omega_1^2/\omega_{\rm RF}$; the approximation
+is controlled by scale separation, not exact cancellation at every time.
+For strong drives or broadband ultrashort pulses, integrate the full
+laboratory Hamiltonian or use an appropriately corrected rotating model.
 
 \section{Hard-pulse dynamics}
 \label{sec:04:hard-pulse-dynamics}
 \subsection{Flip angle, RF phase and rotation axis}
+For resonant constant-phase RF, the rotation generators commute.
+The propagator is
+\[
+ U=\exp\left(+\frac{\ii\alpha}{2}\vect n\cdot\vect\sigma\right),
+ \qquad\alpha=\gamma\int B_a(t)\dd t,\qquad
+ \vect n=(\cos\phi,\sin\phi,0).
+\]
+Here $B_a$ is nonnegative and phase is fixed; a signed envelope can instead
+be used if its sign is retained in the integral, or represented by a
+$\pi$ phase change. Integrating the absolute value of an envelope with
+sign changes would be wrong.
+The active Bloch rotation is $R_{\vect n}(-\alpha)$:
+\begin{equation}
+ R_\phi(-\alpha)=R_z(\phi)
+ \begin{pmatrix}1&0&0\\0&\cos\alpha&\sin\alpha\\
+ 0&-\sin\alpha&\cos\alpha\end{pmatrix}R_z(-\phi).
+ \label{eq:04:rotation}
+\end{equation}
+Phase modulation makes successive axes differ and generally requires
+time ordering.
+
 \subsection{On-resonance excitation and inversion}
+Starting from $M_0\vect e_z$,
+\begin{equation}
+ M_+=\ii M_0\ee^{\ii\phi}\sin\alpha,\qquad
+ M_z=M_0\cos\alpha .
+ \label{eq:04:tip}
+\end{equation}
+For $\phi=0$, a positive $\pi/2$ pulse sends $+z$ to $+y$.
+A phase-$\pi/2$ pulse sends it to $-x$.
+For an arbitrary transverse input, a $\pi$ pulse gives
+\begin{equation}
+ M_+'\ =\ee^{2\ii\phi}M_+^*,\qquad M_z'=-M_z.
+ \label{eq:04:refocus}
+\end{equation}
+The doubled RF phase is crucial for echoes and phase cycling.
+Refocusing is not multiplication of the transverse signal by $-1$:
+it conjugates it in an RF-dependent transverse basis.
+
 \subsection{Off-resonance excitation and bandwidth}
+For a rectangular phase-zero pulse of duration $T_p$, starting from $+z$,
+Rodrigues' formula gives
+\begin{equation}
+ \begin{split}
+ M_x/M_0&=\frac{\omega_1\Delta\omega}{\Omega^2}
+                       (1-\cos\Omega T_p),\\
+ M_y/M_0&=\frac{\omega_1}{\Omega}\sin\Omega T_p,\\
+ M_z/M_0&=\frac{\Delta\omega^2+\omega_1^2\cos\Omega T_p}{\Omega^2}.
+ \end{split}
+ \label{eq:04:detuned}
+\end{equation}
+The corresponding spin-transition probability is
+$(\omega_1/\Omega)^2\sin^2(\Omega T_p/2)$.
+The prefactor limits inversion away from resonance even if the pulse
+duration gives a favorable rotation angle.
+
+The spectral width of a short rectangular envelope is of order $1/T_p$,
+but a large-tip excitation profile is not simply its Fourier transform.
+The exact expression includes rotation-axis tilt and nonlinear depletion
+of $M_z$. The Fourier relationship emerges only in the small-tip limit.
 
 \section{Pulse imperfections and calibration}
 \label{sec:04:pulse-imperfections-and-calibration}
 \subsection{Transmit inhomogeneity and flip-angle errors}
+If the actual transmit magnitude is $b(\vect r)$ times the calibrated
+magnitude, an on-resonance nominal flip $\alpha$ becomes $b\alpha$.
+Then $M_z=M_0\cos(b\alpha)$ and
+$M_+=\ii M_0\ee^{\ii\phi}\sin(b\alpha)$.
+For a nominal $\pi/2$ pulse and small fractional error $\epsilon=b-1$,
+the longitudinal residual is $-\pi\epsilon M_0/2$ to first order,
+while the transverse magnitude error starts at order $\epsilon^2$.
+A large transverse signal therefore does not prove an accurate flip.
+
+For nominal inversion, $M_z/M_0=-\cos(\pi\epsilon)$.
+Although its longitudinal error is second order near perfect inversion,
+residual transverse components are first order and can enter later
+echo pathways. Crushers remove net transverse coherence only under
+their stated spatial-averaging assumptions.
+
 \subsection{Finite-duration effects and relaxation}
+A hard-pulse approximation requires the duration short compared with
+relevant $T_1,T_2$ and the pulse bandwidth large compared with the
+offset range to be treated uniformly.
+The RF rotation itself may be large; $\alpha\ll1$ is not a hard-pulse
+requirement. When relaxation during the pulse matters,
+\cref{eq:03:affine} is the appropriate constant-field solution.
+Multiplying an ideal rotation by a scalar $\ee^{-T_p/T_2}$ incorrectly
+applies transverse relaxation to magnetization that was longitudinal
+during part of the pulse.
+
+Finite gradients during RF create a distribution of effective-field axes
+across position. Excitation, refocusing and inversion pulses can have
+different profiles even with the same nominal bandwidth, because they
+act on different initial magnetization and target different rotations.
+
 \subsection{Phase cycling and receiver phase}
+Choose a displayed complex signal $s_{\rm disp}=\ee^{-\ii\phi_R}s$,
+where $\phi_R$ is receiver-reference phase. An excitation phase change
+$\phi\mapsto\phi+\delta$ rotates a simple FID by $\ee^{\ii\delta}$;
+changing $\phi_R$ by the same amount restores its displayed phase.
+An echo can depend on twice the refocusing phase, as in
+\cref{eq:04:refocus}, so the same receiver adjustment is not generally
+valid for every pathway.
+
+Phase cycling combines acquisitions with chosen transmit and receiver
+phases so that desired pathways add and unwanted contributions cancel.
+It relies on repeatable magnetization and timing. Phase cycling is not
+the same as gradient spoiling: the former is coherent selection across
+experiments, the latter creates spatially varying phase within them.
 
 \section{Selective excitation as an introduction}
 \label{sec:04:selective-excitation-as-an-introduction}
 \subsection{Slice-selection gradients and RF bandwidth}
+With $B_z=B_0+G_zz$, the local frequency offset is
+$\Delta f(z)=\gammabar G_zz$ when the carrier is centered at $z=0$.
+An excitation band of width $\Delta f_{\rm RF}$ then selects
+\begin{equation}
+ \Delta z=\frac{\Delta f_{\rm RF}}{\gammabar\abs{G_z}}.
+ \label{eq:04:slice}
+\end{equation}
+This describes a nominal bandwidth-to-position mapping. The slice profile
+also depends on the pulse's spectral shape, flip angle, off-resonance,
+relaxation and transmit field. Changing carrier by $\delta f$
+moves the slice center by $\delta f/(\gammabar G_z)$.
+
 \subsection{Small-tip response and pulse envelopes}
+In rotating coordinates the exact transverse equation is
+$\dot M_+=-(R_2+\ii\Delta\omega)M_++\ii\gamma\Btx M_z$.
+For initially longitudinal magnetization, a small tip permits
+$M_z\simeq M_0$; neglecting relaxation during the pulse and using an
+integrating factor gives
+\begin{equation}
+ M_+(z,T_p)=\ii\gamma M_0\int_0^{T_p}\Btx(t)
+       \exp\left[-\ii\int_t^{T_p}\Delta\omega(z,u)\dd u\right]\dd t .
+ \label{eq:04:sta}
+\end{equation}
+For a constant gradient and no other offset,
+define $\kappa(t)=\gammabar\int_t^{T_p}G_z(u)\dd u$.
+The spatial kernel is $\ee^{-\ii2\pi\kappa(t)z}$.
+This backward integrated gradient is excitation encoding, distinct from
+the subsequent readout trajectory. The formula is a linear superposition
+of small tips, each accumulating phase from its creation until pulse end.
+
+For constant $\Btx=B_a$ and constant detuning,
+\[
+ M_+(T_p)=\ii\gamma M_0B_aT_p\,
+       \ee^{-\ii\Delta\omega T_p/2}
+       \sinc\left(\frac{\Delta\omega T_p}{2\pi}\right).
+\]
+A symmetric real envelope about $T_p/2$ similarly has a linear phase
+corresponding to half-pulse free evolution. A slice-rephasing gradient
+removes that phase in the ideal small-tip symmetric case.
+A time-truncated sinc envelope approximates a rectangular slice profile;
+truncation and apodization trade transition width for ripple.
+
 \subsection{Boundaries of the hard-pulse approximation}
+Small tip and hard pulse are different limits. A long frequency-selective
+pulse can be small-tip, and a short broadband pulse can invert by $\pi$.
+The first neglects longitudinal depletion; the second neglects competing
+evolution during the RF operation.
+Pulse design beyond these limits requires Bloch simulation or
+large-tip methods. \Cref{ch:18} develops those design methods using the
+same phase conventions \cite{bernstein2004}.
 
 \section{Worked examples}
 \label{sec:04:worked-examples}
-% Planned calculations: Rotating-frame transformation and flip angle of a rectangular RF pulse.
 \subsection{Derivation and quantitative calculation}
+\begin{workedexample}[RF amplitude for a quarter turn]
+A resonant rectangular \SI{1}{\milli\second} pulse needs
+$B_a=\pi/(2\gamma T_p)=\SI{5.872}{\micro\tesla}$.
+This is the co-rotating amplitude. A purely linearly polarized field
+would require peak amplitude \SI{11.743}{\micro\tesla}.
+At 3 T the ratio $\omega_1/\omega_{\rm RF}$ is about
+$1.96\times10^{-6}$, comfortably within the usual rotating-wave regime.
+\end{workedexample}
+\begin{workedexample}[A nominal 90-degree pulse at 500 Hz offset]
+For the same pulse, $\omega_1=500\pi$ rad/s and
+$\Delta\omega=1000\pi$ rad/s. Thus $\Omega T_p=\pi\sqrt5/2$.
+Equation \eqref{eq:04:detuned} gives approximately
+$(M_x,M_y,M_z)/M_0=(0.773,-0.162,0.614)$.
+The vector still has unit length, but it is neither transverse nor in
+the nominal RF phase. A single effective flip magnitude would hide
+the transverse phase error.
+\end{workedexample}
 \subsection{Assumptions, limiting cases and scanner interpretation}
+\begin{workedexample}[Slice bandwidth and gradient]
+For a nominal \SI{5}{\milli\metre} slice and
+$\Delta f_{\rm RF}=\SI{2}{\kilo\hertz}$,
+$\abs{G_z}=2000/(42.57748\times10^6\cdot0.005)
+=\SI{9.395}{\milli\tesla\per\metre}$.
+A constant \SI{100}{\hertz} off-resonance shifts its center by
+\SI{0.25}{\milli\metre} in magnitude. It also affects transverse phase
+and later readout encoding; slice displacement is only one consequence.
+\end{workedexample}
 
 \section{Challenge problems}
 \label{sec:04:challenge-problems}
-% Problem design: Derive a detuned pulse propagator; debug a factor-of-two RF amplitude error.
-% Use challengeproblem and stable labels prob:04:<topic>.
-% Complete solutions belong in Appendix E, section for this chapter.
-% Use \begin{solution}{prob:04:<topic>} ... \end{solution} there.
 \subsection{Derivation and quantitative design}
+\begin{challengeproblem}[Frame transformation from two descriptions]
+\label{prob:04:frame}
+Derive \cref{eq:04:frame} by differentiating $W\ket\psi$.
+Independently transform the Cartesian torque equation.
+For a detuned rectangular pulse, derive \cref{eq:04:detuned} and
+check length conservation and the limits $\Delta\omega=0$ and
+$\omega_1=0$.
+\end{challengeproblem}
+\begin{challengeproblem}[An RF amplitude calibration error]
+\label{prob:04:factor}
+An engineer interprets a linearly polarized peak amplitude as $\abs{\Btx}$
+and sets it to $\pi/(2\gamma T_p)$ for a 90-degree pulse.
+Find the actual flip and all components for an initially longitudinal
+vector. Find the result of two such pulses with phases $0$ and $\pi/2$,
+without free evolution, and compare with adding their flip magnitudes.
+\end{challengeproblem}
+\begin{challengeproblem}[Selective excitation and rephasing]
+\label{prob:04:select}
+Derive the small-tip response for a real pulse symmetric about $T_p/2$
+under constant $G_z$. Find the gradient area after the pulse that
+removes its linear slice phase. For $T_p=2$ ms and
+$G_z=10$ mT/m compute the area. Explain why the half-area rule does not
+apply unchanged to an arbitrary asymmetric pulse.
+\end{challengeproblem}
 \subsection{Model criticism and integrated reasoning}
+\begin{challengeproblem}[RF phase is not receiver phase]
+\label{prob:04:phase}
+An excitation of phase $\phi_1$ is followed by ideal refocusing of phase
+$\phi_2$. Find the complex echo phase at its center, starting from $+z$
+with a 90-degree excitation. If $\phi_2$ is advanced by $\pi/2$,
+what receiver-phase change preserves the displayed echo?
+\end{challengeproblem}
+\begin{challengeproblem}[A pulse that cancels on resonance]
+\label{prob:04:biphasic}
+In the small-tip limit, a pulse has constant envelope $B_a$ for
+$0<t<T_p/2$ and $-B_a$ for $T_p/2<t<T_p$, at constant detuning.
+Derive its complex excitation response and its leading small-detuning
+behavior. Explain why integrating $\abs{\Btx}$ gives a false resonant flip.
+\end{challengeproblem}

@@ -1,59 +1,530 @@
-% Scope: Develop only the mathematics and electromagnetism needed for spin dynamics, encoding, noise and estimation; derive prerequisites at their first useful level.
-% Status: architecture only; no chapter prose or completed problems yet.
-% Prerequisites: None; conventions in the front matter.
-% Planned worked examples: Phasor signs, sampling limits and covariance propagation.
-% Planned figures: Complex plane, convolution, sampling replicas.
-% Planned challenge problems: Prove an aliasing ambiguity; optimize a noisy linear estimator.
+% Scope: Mathematical and electromagnetic tools needed for spin dynamics and imaging.
+% Status: foundational chapter, with derivations, numerical examples and problems.
+% Prerequisites: None; the front-matter conventions are normative.
+% Planned figures: Implemented Fourier sampling diagram.
+% Planned challenge problems: Implemented; solutions are in Appendix E.
 \chapter{Mathematical and Physical Foundations}
 \label{ch:01}
+
+MRI combines a dynamical system with an inverse problem. Fields drive nuclear
+magnetic moments; a receiver records noisy linear functionals of the resulting
+magnetization. Recovering an image or a material parameter requires both a
+physical forward model and an account of which features that model makes
+observable. This chapter develops the mathematics needed to make those
+statements precise. The spatial transform convention is that of
+\hyperref[front:conventions]{front-matter conventions}; changing it within a calculation changes the
+inferred encoding direction.
 
 \section{Complex representation and dimensional reasoning}
 \label{sec:01:complex-representation-and-dimensional-reasoning}
 \subsection{Complex numbers, Euler's formula and phasors}
+A complex number $z=x+\ii y$ represents two real components, with
+$z^*=x-\ii y$, $\abs z^2=zz^*=x^2+y^2$, and
+$z=\abs z\,\ee^{\ii\phi}$. Euler's identity follows by separating the even
+and odd powers in the exponential series. Multiplication by
+$\ee^{\ii\theta}$ is the planar rotation
+\[
+ \begin{pmatrix}x'\\y'\end{pmatrix}
+ =\begin{pmatrix}\cos\theta&-\sin\theta\\
+                  \sin\theta&\cos\theta\end{pmatrix}
+  \begin{pmatrix}x\\y\end{pmatrix}.
+\]
+Thus $M_x+\ii M_y$ represents a real vector, not an additional physical
+magnetization. Conjugation reverses its transverse angle and will be the
+algebraic signature of an ideal refocusing pulse.
+
+A real sinusoid is
+$v(t)=\operatorname{Re}\{V\ee^{-\ii\omega t}\}$, where the complex
+amplitude $V$ stores amplitude and phase. This real signal contains both
+positive and negative Fourier frequencies. A complex quadrature measurement
+retains two independent channels and distinguishes the directions of
+rotation. Taking a real part too early loses this information:
+$\cos\omega t$ does not determine whether the underlying transverse
+vector rotates clockwise or counterclockwise.
+
 \subsection{Frequency, angular frequency and phase}
+Frequency $f$ counts cycles per second; angular frequency
+$\omega=2\pi f$ measures radians per second. A time-dependent phase obeys
+$\phi(t)-\phi(t_0)=\int_{t_0}^t\omega(\tau)\dd\tau$ if $\omega$ is
+defined as its signed rate. In this book $\omega_0=\gamma B_0$
+is a positive Larmor \emph{magnitude}, while the phase rate of $M_+$ is
+$-\omega_0$. These uses must not be conflated.
+
+In $\ee^{-\ii2\pi kx}$, $k$ is in cycles per metre. A wavevector in
+radians per metre instead occurs as $\ee^{-\ii qx}$, with $q=2\pi k$.
+A numerical library cannot detect an interchange: both variables are
+floating-point numbers, and radians are dimensionless in SI algebra.
+The sign and cyclic/angular convention are part of a variable's definition.
+
 \subsection{SI units, scaling and dimensional checks}
+A magnetic moment has units $\si{\ampere\square\metre}$, energy in a field
+is in joules, and magnetization is moment per volume,
+$\si{\ampere\per\metre}$. Magnetic flux density $B$ is in tesla, whereas
+field strength $H$ is in $\si{\ampere\per\metre}$.
+They are not interchangeable in a torque or Zeeman-energy formula.
+For a linear isotropic material $B=\mu H$ is a constitutive approximation.
+
+Exponents, trigonometric arguments and logarithmic arguments must be
+dimensionless. For example, $\gamma Gxt$ is dimensionless because
+$\gamma$ has units $\si{\per\second\per\tesla}$ and $G$ has units
+$\si{\tesla\per\metre}$. Such checks reject $G/t$ where an integrated
+gradient $Gt$ is required, but not a missing $2\pi$, a wrong sign,
+or a factor of two in complex-noise variance. Those require independent
+physical and limiting-case checks.
 
 \section{Linear algebra for spin and encoding}
 \label{sec:01:linear-algebra-for-spin-and-encoding}
 \subsection{Vector spaces, inner products and adjoints}
+For complex columns, define
+$\langle\vect x,\vect y\rangle=\vect x\adj\vect y$ and
+$\norm{\vect x}_2^2=\vect x\adj\vect x$. The adjoint is the
+conjugate transpose, characterized by
+$\langle\mat A\vect x,\vect y\rangle
+=\langle\vect x,\mat A\adj\vect y\rangle$.
+This identity defines continuous-operator adjoints too. For functions,
+the inner product is $\int_\Omega f^*g\dd\vect r$;
+discrete quadrature weights must be included when approximating it.
+
+A Hermitian matrix satisfies $\mat H=\mat H\adj$ and has real quadratic
+forms $\vect x\adj\mat H\vect x$. A positive-definite covariance
+$\mat\Psi$ induces
+$\norm{\vect y}_{\mat\Psi^{-1}}^2=\vect y\adj\mat\Psi^{-1}\vect y$.
+If $\mat L\mat L\adj=\mat\Psi$, whitening by $\mat L^{-1}$ turns
+this into a Euclidean norm. The encoding matrix and the measurements
+must both be whitened; changing only the data changes the model.
+
 \subsection{Eigenvalues, eigenvectors and matrix exponentials}
+If $\mat A\vect v_j=\lambda_j\vect v_j$ and the eigenvectors span the space,
+$\mat A=\mat V\mat\Lambda\mat V^{-1}$, so
+$\ee^{t\mat A}=\mat V\diag(\ee^{t\lambda_j})\mat V^{-1}$ solves
+$\dot{\vect x}=\mat A\vect x$.
+The series $\ee^{\mat A}=\sum_{n\geq0}\mat A^n/n!$ remains valid
+when $\mat A$ is not diagonalizable. A Jordan block produces polynomial
+factors multiplying exponentials; diagonalization is not a universal
+numerical method.
+
+A Hermitian generator $\mat H$ gives a unitary propagator
+$\mat U=\ee^{-\ii t\mat H/\hbar}$ with $\mat U\adj\mat U=\mat I$.
+A real skew-symmetric generator gives an orthogonal rotation.
+Dissipative generators instead have decaying modes. These distinctions
+separate coherent spin evolution from relaxation.
+
+Time-dependent generators require ordering.
+$\ee^{\Delta t\mat A_2}\ee^{\Delta t\mat A_1}$ generally differs from
+$\ee^{\Delta t(\mat A_1+\mat A_2)}$.
+Series expansion shows a leading difference
+$\tfrac12\Delta t^2[\mat A_2,\mat A_1]$.
+Finite rotations about different RF axes therefore cannot be combined
+by merely adding scalar flip angles.
+
 \subsection{Singular values, rank and conditioning}
+Every finite matrix has an SVD
+$\mat A=\mat U\mat\Sigma\mat V\adj$, with orthonormal singular vectors
+and nonnegative singular values $\sigma_j(\mat A)$.
+The argument distinguishes them from the noise standard deviation $\sigma$.
+For $\vect y=\mat A\vect x+\vect n$,
+\[
+ \vect u_j\adj\vect y=\sigma_j(\mat A)\vect v_j\adj\vect x+
+                         \vect u_j\adj\vect n .
+\]
+Inversion divides noise and signal by the same singular value.
+Zero values imply nonidentifiability; small values imply instability.
+For full column rank,
+$\kappa_2(\mat A)=\sigma_{\max}(\mat A)/\sigma_{\min}(\mat A)$
+measures worst-case sensitivity. Repeating nearly identical encoding
+does not necessarily improve conditioning.
+
+The minimum-norm least-squares solution is
+$\mat A^+\vect y=\sum_{\sigma_j>0}
+\vect v_j(\vect u_j\adj\vect y)/\sigma_j$.
+Discarding small singular values stabilizes it by also removing object
+components. The result has a resolution operator rather than an exact
+inverse, an essential point for later parallel imaging and regularization.
 
 \section{Fourier analysis and linear systems}
 \label{sec:01:fourier-analysis-and-linear-systems}
 \subsection{Transform pairs and distributions}
+For an integrable one-dimensional function,
+\begin{equation}
+ \widetilde f(k)=\int_{\mathbb R}f(x)\ee^{-\ii2\pi kx}\dd x .
+ \label{eq:01:ft}
+\end{equation}
+Exponentials are eigenfunctions of translations; their coefficients
+describe spatial variation at each frequency. If $x$ has units of length,
+$\widetilde f$ has units of $f$ times length.
+
+For $f(x)=\exp[-x^2/(2a^2)]$, integration by parts gives
+$\widetilde f'(k)=-4\pi^2a^2k\widetilde f(k)$.
+Using $\widetilde f(0)=\sqrt{2\pi}a$ gives the pair
+\begin{equation}
+ \ee^{-x^2/(2a^2)}
+ \ \longleftrightarrow\
+ \sqrt{2\pi}a\,\ee^{-2\pi^2a^2k^2},\qquad a>0 .
+ \label{eq:01:gaussian}
+\end{equation}
+A unit-area Gaussian of width $\epsilon$ approaches the Dirac delta
+distribution: integration against a continuous test function approaches
+that function's value at zero. A delta is defined through its action,
+$\int\delta(x-x_0)g(x)\dd x=g(x_0)$, not as an ordinary infinitely
+high function. Change of variables gives $\delta(ax)=\delta(x)/\abs a$.
+
+Insert \cref{eq:01:ft} into a Gaussian-regularized inverse:
+\[
+ \int\widetilde f(k)\ee^{+\ii2\pi kx}
+        \ee^{-2\pi^2\epsilon^2k^2}\dd k
+ =\int f(u)\frac{\ee^{-(x-u)^2/(2\epsilon^2)}}{\sqrt{2\pi}\epsilon}\dd u .
+\]
+Absolute integrability justifies interchanging the regularized integrals.
+Taking $\epsilon\to0$ at continuity points proves inversion.
+A symmetric limit at a jump gives the midpoint. The transform extends
+to square-integrable functions by completion, with mean-square equality.
+Substituting the inverse for $g$ and recognizing $\widetilde f^*$
+also gives Parseval--Plancherel:
+\begin{equation}
+ \int f^*(x)g(x)\dd x=\int\widetilde f^*(k)\widetilde g(k)\dd k .
+ \label{eq:01:parseval}
+\end{equation}
+Squared norm is conserved, with dimensions carried by the integration
+measures. Fourier inversion does not mean pointwise convergence under
+every possible integrability assumption.
+
+For $\operatorname{rect}(x/L)=1$ on $\abs x<L/2$, zero elsewhere,
+direct integration gives
+\begin{equation}
+ \operatorname{rect}(x/L)\longleftrightarrow L\sinc(kL).
+ \label{eq:01:rect}
+\end{equation}
+Substitution further yields
+$f(x-x_0)\leftrightarrow\ee^{-\ii2\pi kx_0}\widetilde f(k)$ and
+$\ee^{+\ii2\pi k_0x}f(x)\leftrightarrow\widetilde f(k-k_0)$.
+Integration by parts yields
+$f'(x)\leftrightarrow\ii2\pi k\widetilde f(k)$ when boundary terms vanish.
+Phase ramps and displacement are therefore Fourier conjugates.
+
 \subsection{Convolution, filtering and impulse responses}
+For a linear shift-invariant operator, write
+$f(x)=\int f(u)\delta(x-u)\dd u$ and apply linearity and shift invariance:
+\[
+ (\mathcal H f)(x)=(h*f)(x)=\int h(x-u)f(u)\dd u .
+\]
+Here $h$ is the response to a delta input. Transforming this integral
+and changing variables proves $\FT(h*f)=\widetilde h\,\widetilde f$.
+The dual identity turns multiplication into convolution.
+A finite frequency acquisition window therefore convolves the image
+with a point-spread function (PSF). Coil sensitivity instead multiplies
+the object and convolves its spectrum.
+
+Linearity and shift invariance are separate assumptions.
+Spatially varying off-resonance can preserve linearity in the object
+while breaking shift invariance; it then requires a kernel $h(x,u)$,
+not $h(x-u)$. A single PSF does not characterize such an entire image.
+
 \subsection{Sampling, Nyquist limits and discrete transforms}
+Sampling at spacing $\Delta x$ multiplies $f$ by a comb:
+$f_s(x)=\sum_n f(n\Delta x)\delta(x-n\Delta x)$.
+Poisson summation gives, in a distributional sense,
+\begin{equation}
+ \widetilde f_s(k)=\frac{1}{\Delta x}
+       \sum_{\ell\in\mathbb Z}\widetilde f(k-\ell/\Delta x).
+ \label{eq:01:replicas}
+\end{equation}
+If $\widetilde f(k)=0$ for $\abs k\geq K$ and $1/\Delta x>2K$,
+replicas do not overlap. Selecting and scaling the central replica
+before inversion gives
+\begin{equation}
+ f(x)=\sum_{n\in\mathbb Z} f(n\Delta x)
+       \sinc\left(\frac{x-n\Delta x}{\Delta x}\right).
+ \label{eq:01:shannon}
+\end{equation}
+Strict inequality avoids a populated band-edge ambiguity.
+This theorem requires infinitely many exact samples and band limitation.
+Finite MRI acquisitions approximate those hypotheses in different domains.
+Shannon's original treatment establishes the sampling framework
+\cite{shannon1949}.
+
+The finite DFT is an exact basis change on $\mathbb C^N$:
+\begin{equation}
+ X_p=\sum_{n=0}^{N-1}x_n\ee^{-\ii2\pi pn/N},\qquad
+ x_n=\frac1N\sum_{p=0}^{N-1}X_p\ee^{+\ii2\pi pn/N}.
+ \label{eq:01:dft}
+\end{equation}
+Substitution reduces the inverse to a geometric sum: it is $N$ for
+equal indices modulo $N$, zero otherwise.
+Thus $\mat F\adj\mat F=N\mat I$ and
+$\sum_n\abs{x_n}^2=N^{-1}\sum_p\abs{X_p}^2$.
+An FFT is an algorithm, not a different transform.
+
+Continuous interpretation introduces periodic extension over $N\Delta x$.
+Products of DFTs represent circular convolution. Padding enough to contain
+the support of a desired linear convolution prevents wraparound, whereas
+padding measured frequency data does not restore absent frequencies.
+Unshifted indices above $N/2$ represent negative frequencies.
+For even $N$ the Nyquist bin is one periodic boundary bin, not two
+independent observations.
+
+\begin{figure}[tb]
+ \centering\input{figures/tikz/01_sampling}
+ \caption{Sampling replicates a continuous spectrum at spacing $1/\Delta x$.
+ Top: separated replicas permit recovery. Bottom: overlapping replicas
+ mix indistinguishable frequency contributions. Vertical scale is schematic.}
+ \label{fig:01:sampling}
+\end{figure}
 
 \section{Probability and measurement noise}
 \label{sec:01:probability-and-measurement-noise}
 \subsection{Random variables, expectations and covariance}
+For mean $\vect\mu=\E[\vect n]$,
+$\mat\Psi=\E[(\vect n-\vect\mu)(\vect n-\vect\mu)\adj]$.
+It is Hermitian positive semidefinite since
+$\vect a\adj\mat\Psi\vect a=\E[\abs{\vect a\adj(\vect n-\vect\mu)}^2]\geq0$.
+A linear operation gives the exact identity
+$\Cov(\mat L\vect n)=\mat L\mat\Psi\mat L\adj$,
+regardless of the noise distribution. Zero covariance implies independence
+for jointly Gaussian real variables, but not in general.
+
+Complex noise also has pseudo-covariance
+$\E[(\vect n-\vect\mu)(\vect n-\vect\mu)^{\mathsf T}]$.
+Proper noise has zero pseudo-covariance.
+Circular Gaussian noise is invariant under common phase rotation.
+Receiver filtering and channel coupling determine whether the usual
+independent proper-noise approximation is justified.
+
 \subsection{Gaussian complex noise and magnitude statistics}
+If $n=n_R+\ii n_I$, with independent
+$n_R,n_I\sim\mathcal N(0,\sigma^2)$, then
+\[
+ \psi=\E[\abs n^2]=2\sigma^2,\qquad
+ p(n)=\frac{1}{\pi\psi}\exp(-\abs n^2/\psi).
+\]
+For noiseless amplitude $A\geq0$, express $y=A+n=r\ee^{\ii\varphi}$.
+The polar-coordinate Jacobian is $r$. Integrating over angle gives
+\begin{equation}
+ p(r\mid A)=\frac r{\sigma^2}
+   \exp\left[-\frac{r^2+A^2}{2\sigma^2}\right]
+   I_0\left(\frac{rA}{\sigma^2}\right),\quad r\geq0,
+ \label{eq:01:rice}
+\end{equation}
+where $I_0(z)=(2\pi)^{-1}\int_0^{2\pi}\ee^{z\cos\theta}\dd\theta$.
+This is Rician noise. At $A=0$, the Rayleigh limit has
+$\E[r]=\sigma\sqrt{\pi/2}$ and $\E[r^2]=2\sigma^2$;
+magnitude background remains positive \cite{gudbjartsson1995}.
+At high SNR,
+$r\approx A+n_R+n_I^2/(2A)$, giving bias $\sigma^2/(2A)$.
+That expansion is invalid near zero signal.
+
 \subsection{Likelihood, bias and propagation of uncertainty}
+Likelihood treats observed data as fixed and model parameters as unknown.
+It is not a normalized parameter density without a prior.
+For a differentiable estimator, linearization gives
+$\Cov(g)\approx\mat J_g\Cov(\vect y)\mat J_g\adj$,
+using real coordinates for nonlinear complex operations.
+Small fluctuations relative to the Jacobian's variation scale are required.
+Phase is singular near a signal zero, invalidating this approximation.
+
+Bias is $\E[\widehat\theta]-\theta$, and variance measures scatter about
+the estimator mean. Scalar mean-squared error is variance plus squared bias.
+Logging a magnitude decay changes both the noise distribution and its
+weighting; it is not maximum likelihood for complex Gaussian data.
 
 \section{Estimation and experimental information}
 \label{sec:01:estimation-and-experimental-information}
 \subsection{Least squares and maximum likelihood}
+For $\vect y=\mat A\vect x+\vect n$ with proper Gaussian noise and known,
+parameter-independent $\mat\Psi>0$, maximizing likelihood minimizes
+$Q=(\vect y-\mat A\vect x)\adj\mat\Psi^{-1}
+(\vect y-\mat A\vect x)$.
+Setting real and imaginary derivatives to zero, equivalently making the
+weighted residual orthogonal to all encoding columns, yields
+\begin{equation}
+ \begin{split}
+ \widehat{\vect x}&=(\mat A\adj\mat\Psi^{-1}\mat A)^{-1}
+                    \mat A\adj\mat\Psi^{-1}\vect y,\\
+ \Cov(\widehat{\vect x})&=(\mat A\adj\mat\Psi^{-1}\mat A)^{-1}.
+ \end{split}
+ \label{eq:01:wls}
+\end{equation}
+Full column rank is required. The covariance follows by linear propagation.
+A pseudoinverse in a rank-deficient system chooses a solution but cannot
+make a null-space component observable.
+
 \subsection{Fisher information and the Cramer--Rao bound}
+For real parameters $\vect\theta$ and complex mean $\vect\mu(\vect\theta)$,
+differentiate the Gaussian log likelihood to obtain score
+$u_a=2\operatorname{Re}\{(\partial_a\vect\mu)\adj
+\mat\Psi^{-1}(\vect y-\vect\mu)\}$.
+Proper-noise covariance gives the Fisher matrix
+\begin{equation}
+ \mathcal I_{ab}
+ =2\operatorname{Re}\{(\partial_a\vect\mu)\adj
+                         \mat\Psi^{-1}(\partial_b\vect\mu)\}.
+ \label{eq:01:fisher}
+\end{equation}
+A parameter-dependent covariance requires additional derivative terms.
+
+For a regular likelihood and unbiased scalar estimator,
+$\E[u]=0$ and differentiation under the integral gives
+$\E[(\widehat\theta-\theta)u]=1$.
+Cauchy--Schwarz then gives
+$\Var(\widehat\theta)\E[u^2]\geq1$.
+In vector form,
+$\Cov(\widehat{\vect\theta})\succeq\mat{\mathcal I}^{-1}$.
+This is a local lower bound under regularity and unbiasedness, not a
+guarantee of finite-sample attainability. Constraints, bias and
+multiple solutions must be examined separately.
+
 \subsection{Identifiability and nuisance parameters}
+Two parameter sets generating identical noiseless data cannot be
+distinguished without added information. Independent sensitivity directions
+are needed for local identifiability. Global identifiability is stronger:
+phase wrapping can give multiple solutions despite a nonzero local derivative.
+
+Partition parameters into target $\theta$ and nuisance vector $\vect\eta$.
+Block inversion gives effective information
+\[
+ \mathcal I_{\mathrm{eff}}=\mathcal I_{\theta\theta}
+ -\mat{\mathcal I}_{\theta\eta}\mat{\mathcal I}_{\eta\eta}^{-1}
+  \mat{\mathcal I}_{\eta\theta}.
+\]
+The subtracted term is nonnegative. Treating unknown receive amplitude,
+transmit calibration or baseline as known overstates precision.
+Useful contrast must create sensitivity distinguishable from those
+nuisance effects.
 
 \section{Fields, dipoles and angular momentum}
 \label{sec:01:fields-dipoles-and-angular-momentum}
 \subsection{Maxwell equations and quasistatic limits}
+In macroscopic SI notation,
+\[
+ \nabla\cdot\vect B=0,\quad \nabla\times\vect E=-\partial_t\vect B,\quad
+ \nabla\cdot\vect D_{\rm el}=\rho_{\rm free},\quad
+ \nabla\times\vect H=\vect J_{\rm free}+\partial_t\vect D_{\rm el}.
+\]
+Electric displacement $\vect D_{\rm el}$ is not the diffusion tensor.
+Constitutive relations such as $\vect D_{\rm el}=\epsilon\vect E$ and
+$\vect J=\sigma_{\rm el}\vect E$ require material assumptions.
+Gradient fields are commonly treated magnetoquasistatically.
+Faraday induction still produces electric fields and cannot be discarded.
+RF wavelengths in tissue may be comparable to body dimensions; a uniform
+RF field is consequently a local or idealized model, not a universal fact.
+
+$B_z=B_0+G_xx$ describes only the leading longitudinal component.
+Other field components must satisfy Maxwell's equations in a current-free
+region. Dropping their higher-order contribution to the field magnitude
+is an approximation, not a complete magnetic-field solution.
+
 \subsection{Magnetic dipole energy and torque}
+A fixed magnetic dipole has $U=-\vect\mu\cdot\vect B$.
+Under a small active rotation $\delta\vect\theta$,
+$\delta\vect\mu=\delta\vect\theta\times\vect\mu$, so
+$\delta U=-\delta\vect\theta\cdot(\vect\mu\times\vect B)$.
+Thus $\vect\tau=\vect\mu\times\vect B$.
+A fixed orientation in a nonuniform field also experiences
+$\vect F=\nabla(\vect\mu\cdot\vect B)$ in the dipole approximation.
+Torque, translational force and dissipative heating are distinct mechanisms.
+
+For angular momentum $\vect J$ with $\vect\mu=\gamma\vect J$,
+$\dot{\vect\mu}=\gamma\vect\mu\times\vect B$.
+Consequently $\dd(\vect\mu^2)/\dd t=0$: torque causes precession,
+not spontaneous alignment. Equilibration needs environmental coupling.
+
 \subsection{Angular momentum and rotating coordinates}
+For axes rotating at angular velocity $\vect\Omega$,
+\[
+ \left(\frac{\dd\vect v}{\dd t}\right)_{\rm lab}
+ =\left(\frac{\dd\vect v}{\dd t}\right)_{\rm rot}
+       +\vect\Omega\times\vect v .
+\]
+Differentiate $\vect v=\sum_jv'_j\vect e'_j$ and use
+$\dot{\vect e}'_j=\vect\Omega\times\vect e'_j$ to obtain this result.
+Magnetic precession in rotating coordinates is therefore
+$\dot{\vect M}_{\rm rot}=\gamma\vect M\times
+(\vect B+\vect\Omega/\gamma)$.
+Resonant proton-frame axes have
+$\vect\Omega=-\omega_{\rm RF}\vect e_z$; their apparent longitudinal
+field is reduced by $\omega_{\rm RF}/\gamma$.
+\Cref{ch:04} derives the same result from the quantum propagator.
 
 \section{Worked examples}
 \label{sec:01:worked-examples}
-% Planned calculations: Phasor signs, sampling limits and covariance propagation.
 \subsection{Derivation and quantitative calculation}
+\begin{workedexample}[A sampled phase is ambiguous]
+For $s_n=\ee^{-\ii2\pi f n\Delta t}$ and
+$\Delta t=\SI{10}{\micro\second}$, the sample rate is
+$\SI{100}{\kilo\hertz}$.
+Offsets $f=\SI{63}{\kilo\hertz}$ and $f'=-\SI{37}{\kilo\hertz}$
+give identical samples since their phase difference is $-2\pi n$.
+A receiver with physical-offset band $[-50,50)$ kHz reports the latter.
+More samples at fixed dwell improve frequency-grid spacing, not the
+unaliased band.
+\end{workedexample}
+\begin{workedexample}[Averaging correlated channels]
+Two measurements of a common complex mean have real-quadrature standard
+deviation $\sigma=2$ and complex covariance
+$\mat\Psi=8\begin{pmatrix}1&0.3\\0.3&1\end{pmatrix}$.
+Their mean has complex variance
+$\tfrac14(8+8+2\cdot2.4)=5.2$, or real-quadrature standard deviation
+$\sqrt{2.6}=1.612$. Independent channels would give $1.414$.
+The improvement factor is $1.240$, not $\sqrt2$.
+\end{workedexample}
 \subsection{Assumptions, limiting cases and scanner interpretation}
+\begin{workedexample}[Precision of a known-amplitude decay]
+A real observation with mean $A\ee^{-t/T}$ and variance $\sigma^2$
+has information
+$\mathcal I_{TT}=A^2t^2\ee^{-2t/T}/(\sigma^2T^4)$ when $A$ is known.
+The derivative of its log with respect to $t$ is $2/t-2/T$, giving
+optimal $t=T$ for one observation with fixed noise.
+For $A/\sigma=100$ and $T=\SI{80}{\milli\second}$, the standard-deviation
+bound is $T\ee/100=\SI{2.17}{\milli\second}$.
+With unknown $A$, one sample identifies neither parameter separately.
+This timing also need not optimize precision per unit scan time.
+\end{workedexample}
 
 \section{Challenge problems}
 \label{sec:01:challenge-problems}
-% Problem design: Prove an aliasing ambiguity; optimize a noisy linear estimator.
-% Use challengeproblem and stable labels prob:01:<topic>.
-% Complete solutions belong in Appendix E, section for this chapter.
-% Use \begin{solution}{prob:01:<topic>} ... \end{solution} there.
 \subsection{Derivation and quantitative design}
+\begin{challengeproblem}[Recoverability and aliasing]
+\label{prob:01:alias}
+For $x_n=n\Delta x$, prove that
+$\ee^{\ii2\pi kx}$ and $\ee^{\ii2\pi(k+\ell/\Delta x)x}$
+are indistinguishable for integer $\ell$. Construct a nonzero smooth
+function whose samples all vanish. Derive the periodic image produced
+by sampling $\widetilde f$ at spacing $\Delta k$. What assumption permits
+unique recovery, and why does increasing the reconstruction matrix not
+supply it?
+\end{challengeproblem}
+\begin{challengeproblem}[An optimal complex linear estimate]
+\label{prob:01:blue}
+Let $\vect y=\vect a x+\vect n$ with complex $x$ and
+$\Cov(\vect n)=\mat\Psi>0$. Among estimators
+$\widehat x=\vect w\adj\vect y$, derive the minimum-variance unbiased
+weight and variance. Evaluate them for $\vect a=(1,2)^{\mathsf T}$ and
+$\mat\Psi=\psi\begin{pmatrix}1&\rho\\\rho&1\end{pmatrix}$,
+real $\abs\rho<1$. Compare $\rho=0$ and $1/2$; explain a vanishing weight.
+\end{challengeproblem}
+\begin{challengeproblem}[A nuisance amplitude in relaxometry]
+\label{prob:01:fisher}
+Two independent real observations have means $A\ee^{-t_j/T}$ and
+variance $\sigma^2$. Derive their Fisher matrix and the information for
+$T$ after eliminating unknown $A$. For $t_1=0$, $t_2=t>0$,
+derive the equation for optimal $t/T$ when information per pair is the
+objective. Explain the singularity if both times are identical.
+\end{challengeproblem}
 \subsection{Model criticism and integrated reasoning}
+\begin{challengeproblem}[The inverse is not the adjoint]
+\label{prob:01:adjoint}
+For $\mat A=\begin{pmatrix}1&1\\0&\epsilon\end{pmatrix}$,
+$0<\epsilon\ll1$, compute the inverse, normal matrix and covariance
+of the inverse estimate for $\Cov(\vect n)=\psi\mat I$.
+Find the leading condition-number scaling. An investigator uses
+$\mat A\adj\vect y$ and reports low noise. Find its mean and explain
+why low noise does not establish accurate recovery.
+\end{challengeproblem}
+\begin{challengeproblem}[Energy, torque and rotating signs]
+\label{prob:01:torque}
+A positive-$\gamma$ dipole begins along $+x$ in $B_0\vect e_z$.
+Derive its initial derivative, full trajectory and rotating derivative
+for axes with $\vect\Omega=-\omega_{\rm RF}\vect e_z$.
+Does torque alone decrease its energy? Identify the missing physics in
+the claim that a static field makes all spins spiral into its
+lowest-energy orientation.
+\end{challengeproblem}

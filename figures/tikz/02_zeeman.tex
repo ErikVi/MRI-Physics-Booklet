@@ -1,0 +1,17 @@
+\begin{tikzpicture}[x=1cm,y=1cm,font=\small]
+\draw[mri axis] (0,0)--(0,3.8) node[above] {$E$};
+\draw[mri signal] (.4,.7)--(3,.7);
+\draw[mri signal] (.4,3)--(3,3);
+\node[anchor=west] at (.5,.35) {$\ket{\uparrow},\ -\hbar\omega_0/2$};
+\node[anchor=west] at (.5,3.35) {$\ket{\downarrow},\ +\hbar\omega_0/2$};
+\draw[<->,thick] (1.7,.8)--(1.7,2.9) node[midway,right] {RF: $\hbar\omega_0$};
+\begin{scope}[xshift=7cm,yshift=1.7cm]
+\draw[gray] (0,0) circle (1.55);
+\draw[mri guide] (0,0) ellipse (1.55 and .42);
+\draw[mri axis] (0,-1.7)--(0,1.9) node[above] {$p_z$};
+\draw[mri axis] (-1.8,0)--(1.95,0) node[right] {$p_x$};
+\draw[mri axis] (.8,.7)--(-1.3,-1.1) node[below] {$p_y$};
+\draw[mri rf,-{Stealth}] (0,0)--(.85,1.15) node[right] {$\vect p$};
+\node at (0,-2) {$\norm{\vect p}\leq1$};
+\end{scope}
+\end{tikzpicture}

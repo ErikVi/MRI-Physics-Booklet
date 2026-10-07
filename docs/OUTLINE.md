@@ -1,3 +1,5 @@
+> Status: Chapters 1–6 and their Appendix E solutions are written. Later chapters and reference appendices remain outlines.
+
 # Detailed Book Outline
 
 Architecture edition: headings are a writing plan, not completed chapters.

@@ -1,139 +1,563 @@
-% Scope: Provide complete derivations and numerical checks keyed to stable problem labels; keep all challenge solutions separate from questions.
-% Status: architecture only; no chapter prose or completed problems yet.
+% Scope: Complete solutions for the foundational block, keyed to stable problem labels.
+% Status: Chapters 1--6 complete; subsequent chapter solutions remain planned.
 \chapter{Solutions to Challenge Problems}
 \label{app:e}
-
 \section{Mathematical and Physical Foundations}
 \label{sec:e:mathematical-and-physical-foundations}
 \subsection{Derivations and numerical checks}
+\begin{solution}{prob:01:alias}
+At \(x_n=n\Delta x\), the ratio of the two exponentials is
+\(\ee^{\ii2\pi\ell n}=1\). For example
+\(g(x)=\ee^{-x^2/a^2}\sin(\pi x/\Delta x)\), with \(a>0\), is smooth, nonzero, square-integrable, and zero at every sample.
+Writing \(L=1/\Delta k\), inverse transformation of the sampled spectrum gives
+\[
+ \Delta k\sum_n\widetilde f(n\Delta k)\ee^{\ii2\pi n\Delta k x}
+ =\int f(u)\sum_\ell\delta(x-u-\ell L)\,\dd u
+ =\sum_\ell f(x-\ell L).
+\]
+The middle step is the Poisson comb identity. Band limitation to the sampled Nyquist band gives unique recovery from an infinite spatial sample sequence; for sampled spatial frequencies, support within a known period prevents overlapping replicas. Finite data also impose an aperture or finite-dimensional model, so the support statement alone does not recover arbitrary fine structure. Increasing a display matrix adds neither measurements nor a valid prior.
+\end{solution}
+\begin{solution}{prob:01:blue}
+Unbiasedness requires \(\vect w^\dagger\vect a=1\), and the complex variance is \(\vect w^\dagger\mat\Psi\vect w\).
+Set \(\vect u=\mat\Psi^{1/2}\vect w\) and \(\vect b=\mat\Psi^{-1/2}\vect a\).
+Cauchy--Schwarz gives \(1\leq\norm{\vect u}^2\norm{\vect b}^2\), with equality only when the two are parallel. Enforcing the constraint yields
+\[
+ \vect w=\frac{\mat\Psi^{-1}\vect a}{\vect a^\dagger\mat\Psi^{-1}\vect a},
+ \qquad V=\frac1{\vect a^\dagger\mat\Psi^{-1}\vect a}.
+\]
+For the specified real example,
+\[
+ \vect w=\frac{(1-2\rho,\;2-\rho)^{\mathsf T}}{5-4\rho},
+ \qquad V=\frac{\psi(1-\rho^2)}{5-4\rho}.
+\]
+At zero correlation, weights are \((1/5,2/5)\) and variance \(\psi/5\).
+At \(\rho=1/2\), they are \((0,1/2)\) and variance \(\psi/4\).
+The first channel adds no benefit to this linear unbiased estimator: subtracting half the second from the first leaves a signal-free residual uncorrelated with the second channel. Independence would additionally require jointly Gaussian noise.
+\end{solution}
+\begin{solution}{prob:01:fisher}
+Let \(w_j=\ee^{-2t_j/T}\) and \(S_q=\sum_jt_j^qw_j\). Differentiating the means gives
+\(\partial_A\mu_j=\ee^{-t_j/T}\) and
+\(\partial_T\mu_j=A t_j\ee^{-t_j/T}/T^2\).
+For real independent noise,
+\[
+ \mathcal I=\frac1{\sigma^2}
+ \begin{pmatrix}S_0&A S_1/T^2\\A S_1/T^2&A^2S_2/T^4\end{pmatrix},
+ \qquad
+ \mathcal I_{T\mid A}=\frac{A^2}{\sigma^2T^4}
+ \left(S_2-\frac{S_1^2}{S_0}\right).
+\]
+For times \(0,t\), this becomes \(A^2t^2/[\sigma^2T^4(\ee^{2t/T}+1)]\).
+With \(u=t/T\), differentiating its logarithm gives
+\(2/u-2\ee^{2u}/(\ee^{2u}+1)=0\), or
+\(u=1+\ee^{-2u}\). The unique positive root is \(1.10886\); the information vanishes at zero and at infinity, making this the maximum.
+Identical times make the derivative columns proportional and the Schur complement zero. Repetition at one time reduces noise in one mean but cannot identify two unknown parameters.
+\end{solution}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\begin{solution}{prob:01:adjoint}
+Direct multiplication gives
+\[
+ \mat A^{-1}=\begin{pmatrix}1&-1/\epsilon\\0&1/\epsilon\end{pmatrix},
+ \qquad
+ \mat A^\dagger\mat A=\begin{pmatrix}1&1\\1&1+\epsilon^2\end{pmatrix}.
+\]
+The inverse estimate is unbiased, with covariance
+\[
+ \psi\mat A^{-1}(\mat A^{-1})^\dagger
+ =\psi\begin{pmatrix}1+\epsilon^{-2}&-\epsilon^{-2}\\
+ -\epsilon^{-2}&\epsilon^{-2}\end{pmatrix}.
+\]
+The squared singular values are the eigenvalues
+\([2+\epsilon^2\pm\sqrt{4+\epsilon^4}]/2\).
+They approach \(2\) and \(\epsilon^2/2\), so
+\(\kappa_2(\mat A)\sim2/\epsilon\).
+The adjoint estimate instead has mean \(\mat A^\dagger\mat A\vect x\) and covariance \(\psi\mat A^\dagger\mat A\). Its bounded noise comes with severe mixing and attenuation of the weakly observed difference between components. Reporting variance without bias hides the failure.
+\end{solution}
+\begin{solution}{prob:01:torque}
+Initially \(\dot{\vect\mu}=-\gamma B_0\mu\,\vect e_y\).
+Solving the transverse equations gives
+\(\vect\mu(t)=\mu(\cos\omega_0t,-\sin\omega_0t,0)\).
+For axes rotating with \(\vect\Omega=-\omega_{\mathrm{RF}}\vect e_z\), the rotating derivative is the lab derivative minus \(\vect\Omega\times\vect\mu\); the transverse phase therefore evolves at \(-(\omega_0-\omega_{\mathrm{RF}})\).
+Energy \(E=-\vect\mu\cdot\vect B_0\) is constant because
+\(\dot E=-\gamma(\vect\mu\times\vect B_0)\cdot\vect B_0=0\).
+Thermalization requires coupling to other degrees of freedom. A torque equation alone has neither energy dissipation nor a temperature.
+\end{solution}
 
 \section{Quantum Spin Physics}
 \label{sec:e:quantum-spin-physics}
 \subsection{Derivations and numerical checks}
+\begin{solution}{prob:02:tomography}
+The Bloch vector is \(\vect p=(b,c,a)\). Since
+\((\vect p\cdot\vect\sigma)^2=\norm{\vect p}^2\mat I\), the eigenvalues are
+\((1\pm\norm{\vect p})/2\). Physicality requires real \(a,b,c\) and
+\(a^2+b^2+c^2\leq1\); the trace is already one.
+Purity is \((1+a^2+b^2+c^2)/2\), and measurement along axis \(j\) gives probabilities \((1\pm p_j)/2\).
+For the first triple, \(\norm{\vect p}^2=0.61\), eigenvalues are approximately \(0.89051,0.10949\), and purity is \(0.805\).
+The positive-axis probabilities are \(0.65,0.70,0.80\) for \(x,y,z\).
+For the second triple the squared length is \(1.17\), so one eigenvalue is negative. Noise can yield an individual negative background-subtracted measurement without violating quantum mechanics; a fitted density operator itself must satisfy positivity.
+\end{solution}
+\begin{solution}{prob:02:thermal}
+In the fixed \(S_z\) basis, set \(x=\beta\hbar\gamma B_0/2\), allowing either sign.
+The energies are \(\mp\hbar\gamma B_0/2\), hence
+\(Z=2\cosh x\), \(p_z=\tanh x\), and
+\(M_z=\rho_s\gamma\hbar\tanh x/2\).
+Because \(\gamma\tanh(\beta\hbar\gamma B_0/2)>0\) for \(B_0>0\), magnetization is parallel to the field for either sign of \(\gamma\); the preferred spin orientation changes.
+For protons at 3 T and 310 K, \(p_z=9.8874\times10^{-6}\).
+The excess relative to the lower-population state is
+\(2p_z/(1-p_z)=\ee^{2x}-1\simeq1.9775\times10^{-5}\), nearly twice as large.
+Defining relative error against exact polarization, the linear approximation fails by one percent when
+\(x/\tanh x-1=0.01\). Expansion gives \(x\simeq\sqrt{0.03}\); the numerical root is about \(0.17338\).
+At 310 K this would require about \(5.26\times10^4\) T; at 3 T it requires about \(0.0177\) K. These are extrapolations of the independent-spin model, not practical operating prescriptions.
+\end{solution}
+\begin{solution}{prob:02:ramsey}
+Write \(\theta=\Delta\omega\tau\).
+The first pulse sends \(\vect p\) to \((0,p_0,0)\), and free evolution sends it to
+\(p_0(\sin\theta,\cos\theta,0)\).
+Rodrigues rotation by \(-\pi/2\) about
+\(\vect n=(\cos\phi,\sin\phi,0)\) makes the final longitudinal component
+\[
+ p_z^{\mathrm{final}}=-(\vect n\times\vect p)_z
+ =-p_0\cos(\theta+\phi).
+\]
+For the quantum calculation use
+\(U_x=(\mat I+\ii\sigma_x)/\sqrt2\),
+\(U_f=\exp(\ii\theta\sigma_z/2)\), and
+\(U_\phi=[\mat I+\ii(\sigma_x\cos\phi+\sigma_y\sin\phi)]/\sqrt2\).
+Conjugating the initial state successively gives
+\[
+ \rho_1=(\mat I+p_0\sigma_y)/2,\qquad
+ \rho_2=[\mat I+p_0(\sigma_x\sin\theta+\sigma_y\cos\theta)]/2.
+\]
+Using \(\sigma_i\sigma_j=\delta_{ij}\mat I+\ii\epsilon_{ijk}\sigma_k\) in
+\(U_\phi\rho_2U_\phi^\dagger\), the coefficient of \(\sigma_z\) is
+\(-p_0\cos(\theta+\phi)\), and its trace with \(\sigma_z\) reproduces the classical result.
+\end{solution}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\begin{solution}{prob:02:dephase}
+The individual Bloch vectors are
+\((\cos\Omega t,\mp\sin\Omega t,0)\). Their equal mixture has
+\[
+ \bar\rho(t)=\tfrac12[\mat I+\cos(\Omega t)\sigma_x],
+ \qquad \Tr\bar\rho^2=\tfrac12[1+\cos^2(\Omega t)].
+\]
+At \(\tau\), a \(\pi_x\) pulse reverses each \(y\) component. The second interval with the same offset exactly reverses the accumulated relative phase, returning both vectors to \(+x\) at \(2\tau\). Thus \(\bar\rho(2\tau)=\ket{+x}\bra{+x}\) has purity one. Each subensemble remained pure throughout; reduced ensemble purity reflected an unobserved static offset label. It alone cannot demonstrate irreversible decoherence.
+\end{solution}
+\begin{solution}{prob:02:rates}
+Let \(P_l\) be the lower-energy population, \(P_u=1-P_l\), and \(p=P_l-P_u\).
+The equation \(\dot P_l=W_dP_u-W_uP_l\) implies
+\[
+ \dot p=(W_d-W_u)-(W_d+W_u)p,\quad
+ p_{\mathrm{eq}}=\frac{W_d-W_u}{W_d+W_u},\quad
+ T_1^{-1}=W_d+W_u.
+\]
+Thermal detailed balance requires \(W_u/W_d=\ee^{-\beta\Delta E}\), giving the expected \(\tanh(\beta\Delta E/2)\).
+The assumed coherence law gives
+\(T_2^{-1}=(2T_1)^{-1}+\Gamma_\phi\).
+For nonnegative rates, \(0<T_2/T_1\leq2\), with equality for no additional pure dephasing. This applies to the stated Markovian two-level relaxation model; arbitrary fitted exponentials need not define a completely positive map or satisfy detailed balance, and heterogeneous ensembles can require different models.
+\end{solution}
 
 \section{Classical Magnetization and the Bloch Equations}
 \label{sec:e:classical-magnetization-and-the-bloch-equations}
 \subsection{Derivations and numerical checks}
+\begin{solution}{prob:03:steady}
+Let \(m_n\) be longitudinal magnetization immediately before pulse \(n\).
+The pulse leaves \(m_n\cos\alpha\) longitudinally, and complete spoiling removes transverse memory. Recovery over \(\TR\) gives
+\[
+ m_{n+1}=M_0(1-E_1)+E_1\cos\alpha\,m_n,\qquad E_1=\ee^{-\TR/T_1}.
+\]
+The fixed point and transient are
+\[
+ m_{\mathrm{ss}}=\frac{M_0(1-E_1)}{1-E_1\cos\alpha},\qquad
+ m_n=m_{\mathrm{ss}}+(E_1\cos\alpha)^n(m_0-m_{\mathrm{ss}}).
+\]
+Since \(0<E_1<1\), the transient converges. Ignoring fixed echo attenuation, the signal is
+\(S=M_0(1-E_1)\sin\alpha/(1-E_1\cos\alpha)\).
+Differentiation gives a numerator proportional to \(\cos\alpha-E_1\), so
+\(\cos\alpha_{\mathrm E}=E_1\) maximizes the single-tissue steady-state signal on \(0<\alpha<\pi\).
+It need not maximize contrast between tissues, precision, or signal per unit time if repetition time also changes.
+\end{solution}
+\begin{solution}{prob:03:echo}
+The first interval gives \(M_+(0)\ee^{-\tau/T_2}\ee^{-\ii\delta_1\tau}\).
+Conjugation by the pulse and evolution through the second interval yield
+\[
+ M_+(2\tau)=\ee^{2\ii\phi}M_+(0)^*
+ \ee^{-2\tau/T_2}\ee^{\ii(\delta_1-\delta_2)\tau}.
+\]
+For zero-mean joint Gaussian offsets of equal variance \(\sigma^2\) and correlation \(c\), the difference has variance \(2\sigma^2(1-c)\). Its characteristic function therefore gives attenuation
+\(\ee^{-\sigma^2\tau^2(1-c)}\).
+Perfectly correlated offsets refocus; independent offsets leave
+\(\ee^{-\sigma^2\tau^2}\); anticorrelation makes dephasing stronger. A pulse reverses previously accumulated phase, not the random process itself.
+\end{solution}
+\begin{solution}{prob:03:exchange}
+Remove the common offset by a rotating-frame transformation; laboratory-frame transverse modes acquire the common factor \(\ee^{-\ii\Delta\omega t}\).
+For equal exchange rates \(k\) and equal intrinsic \(R_2\),
+\[
+ \frac{\dd}{\dd t}\begin{pmatrix}m_a\\m_b\end{pmatrix}
+ =-\begin{pmatrix}R_2+k&-k\\-k&R_2+k\end{pmatrix}
+ \begin{pmatrix}m_a\\m_b\end{pmatrix}.
+\]
+Sum and difference obey
+\(\dot m_+=-R_2m_+\) and
+\(\dot m_-=-(R_2+2k)m_-\).
+Hence \(m_a=(m_+(0)\ee^{-R_2t}+m_-(0)\ee^{-(R_2+2k)t})/2\), with the minus sign for \(m_b\)'s difference term.
+Equal receive weights observe only the sum, so exchange is invisible in this special experiment. Antiphase initial conditions have zero total signal for all time even while the difference decays. Different offsets, rates or receive weights can reveal the otherwise hidden mode.
+\end{solution}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\begin{solution}{prob:03:fit}
+For \(S(t)=S_0\ee^{-R_2t-\sigma_\omega^2t^2/2}\), the logarithmic secant gives
+\[
+ R_{\mathrm{fit}}=-\frac{\log S(t_2)-\log S(t_1)}{t_2-t_1}
+ =R_2+\frac{\sigma_\omega^2}{2}(t_1+t_2).
+\]
+The two specified midpoint rates imply
+\(60-40=\sigma_\omega^2(0.020-0.010)\), so
+\(\sigma_\omega^2=2000\ \mathrm{s}^{-2}\),
+\(\sigma_\omega=44.72\ \mathrm{rad/s}\), and
+\(R_2=20\ \mathrm{s}^{-1}\), or \(T_2=50\) ms.
+An ideal echo at 40 ms has amplitude \(S_0\ee^{-0.8}=0.4493S_0\).
+A single fitted \(T_2^*\) depends on the chosen interval here because the logarithm is curved.
+\end{solution}
+\begin{solution}{prob:03:euler}
+For \(\dot M_+=-\ii\omega M_+\), forward Euler multiplies each step by
+\(1-\ii\omega h\), whose magnitude exceeds one.
+After \(N=t/h\) steps the amplitude ratio is
+\((1+\omega^2h^2)^{N/2}\).
+Its logarithm is \(\omega^2th/2+O(th^3\omega^4)\), so leading relative amplitude error is \(\omega^2th/2\).
+Reducing a local phase error is not enough to preserve the invariant norm over many steps.
+Applying exact relaxation after each Euler step gives the factor \(\ee^{-h/T_2}(1-\ii\omega h)\). Its magnitude can fall below one, masking the artificial growth; relative to the exact decaying solution, the same spurious factor \((1+\omega^2h^2)^{N/2}\) remains. Exact rotations preserve norm in the torque-only limit.
+\end{solution}
 
 \section{RF Excitation and the Rotating Frame}
 \label{sec:e:rf-excitation-and-the-rotating-frame}
 \subsection{Derivations and numerical checks}
+\begin{solution}{prob:04:frame}
+With \(Q=R_z(-\omega_{\mathrm{RF}}t)\), write
+\(\vect M_{\mathrm{lab}}=Q\vect M_{\mathrm{rot}}\).
+Differentiation and multiplication by \(Q^{-1}\) subtract the frame angular velocity, giving effective longitudinal field
+\(\Delta\omega/\gamma\).
+For spinors \(W=\exp(-\ii\omega_{\mathrm{RF}}t\sigma_z/2)\),
+\[
+ H_{\mathrm{rot}}=WH_{\mathrm{lab}}W^\dagger+
+ \ii\hbar\dot W W^\dagger
+ =WH_{\mathrm{lab}}W^\dagger+\hbar\omega_{\mathrm{RF}}\sigma_z/2.
+\]
+This produces the same detuning. For constant phase-zero RF, define
+\(\Omega=(\omega_1^2+\Delta\omega^2)^{1/2}\) and
+\(\vect n=(\omega_1,0,\Delta\omega)/\Omega\).
+Rodrigues' formula
+\(R_{\vect n}(-\Omega T)\vect e_z=
+\vect e_z\cos\Omega T-(\vect n\times\vect e_z)\sin\Omega T+
+\vect n n_z(1-\cos\Omega T)\)
+gives the three components printed in the chapter.
+They have squared sum one because this is an orthogonal rotation; on resonance they reduce to \((0,\sin\omega_1T,\cos\omega_1T)\), and for \(\omega_1=0\) the initial longitudinal vector stays fixed.
+\end{solution}
+\begin{solution}{prob:04:factor}
+The co-rotating component of a linear field is half its peak amplitude.
+A duration chosen to satisfy \(\gamma B_{\mathrm{pk}}T=\pi/2\) therefore gives the actual flip \(\pi/4\).
+The first pulse produces \((0,1/\sqrt2,1/\sqrt2)M_0\).
+The second, at phase \(\pi/2\), rotates by \(-\pi/4\) about \(+y\), producing
+\((-1/2,1/\sqrt2,1/2)M_0\).
+The two rotations do not combine into a phase-zero \(\pi/2\) pulse because their axes differ. Both the factor-of-two error and noncommutation matter.
+\end{solution}
+\begin{solution}{prob:04:select}
+Write \(t=T/2+u\) in the small-tip integral.
+For a real symmetric envelope, the odd sine contribution vanishes and the remaining integral is real. The output therefore factors as
+\(i\gamma M_0\ee^{-\ii\gamma G_z zT/2}\) times a real profile.
+A subsequent gradient area \(A\) multiplies by \(\ee^{-\ii\gamma Az}\); canceling the linear phase requires \(A=-G_zT/2\).
+For \(T=2\) ms and \(G_z=10\) mT/m this is
+\(-10\ \mathrm{\mu T\,s/m}\).
+An asymmetric envelope can have a nonlinear spectral phase, and finite-tip dynamics need not retain the simple Fourier relation. A half-area lobe cannot generally correct either effect.
+\end{solution}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\begin{solution}{prob:04:phase}
+After the excitation, \(M_+=iM_0\ee^{i\phi_1}\).
+At the echo, equal static phases cancel and refocusing gives
+\(M_+=-iM_0\ee^{i(2\phi_2-\phi_1)}\ee^{-\TE/T_2}\).
+Its phase is \(2\phi_2-\phi_1-\pi/2\).
+Advancing \(\phi_2\) by \(\pi/2\) changes the echo sign. Advancing the receiver reference by \(\pi\) compensates because demodulation multiplies by \(\ee^{-i\phi_R}\). This pathway calculation is the basis for selecting echoes by phase cycling.
+\end{solution}
+\begin{solution}{prob:04:biphasic}
+For detuning \(\delta\), directly split the small-tip integral:
+\[
+ M_+(T)=i\gamma M_0B_a
+ \left[\int_0^{T/2}\ee^{-i\delta(T-t)}\dd t
+ -\int_{T/2}^T\ee^{-i\delta(T-t)}\dd t\right]
+ =-\frac{\gamma M_0B_a}{\delta}
+       (1-\ee^{-i\delta T/2})^2 .
+\]
+The limit at zero detuning is zero, and the leading small-detuning term is
+\(\gamma M_0B_a\delta T^2/4\).
+On resonance the cancellation is also exact beyond the small-tip limit: the two equal-duration rotations are about opposite axes and are inverses. Off resonance the effective axes are not opposite because their longitudinal components retain the same sign, so zero signed RF area does not imply no excitation.
+\end{solution}
 
 \section{Spatial Encoding and k-Space}
 \label{sec:e:spatial-encoding-and-k-space}
 \subsection{Derivations and numerical checks}
+\begin{solution}{prob:05:readout}
+The required interval is \(1/L=3.90625\ \mathrm m^{-1}\), so
+\(G=\Delta k/(\gammabar\Delta t)=18.349\) mT/m.
+The nominal pixel width is 1 mm, bandwidth per pixel is
+\(1/(256\cdot5\,\mu\mathrm s)=781.25\) Hz, and
+\(K=N/(2L)=500\ \mathrm m^{-1}\).
+The negative prephaser area has magnitude
+\(A=K/\gammabar=11.7433\ \mathrm{\mu T\,s/m}\).
+For a slew-limited triangular pulse, \(A=G_p^2/S_{\max}\), so
+\(G_p=\sqrt{AS_{\max}}\simeq41.97\) mT/m, exceeding the cap.
+A trapezoid at \(G_{\max}\) has ramp duration \(G_{\max}/S_{\max}\) on each side and total area
+\(A=G_{\max}(T_{\mathrm{flat}}+G_{\max}/S_{\max})\).
+Thus
+\[
+ T_{\min}=\frac{A}{G_{\max}}+\frac{G_{\max}}{S_{\max}}
+ \simeq0.56025\ \mathrm{ms},
+ \qquad T_{\mathrm{flat}}\simeq0.02692\ \mathrm{ms}.
+\]
+Maximum allowed slew and plateau strength minimize time for the prescribed area and zero endpoints. The readout's own ramps are a separate timing requirement.
+\end{solution}
+\begin{solution}{prob:05:balance}
+Conjugation makes the first lobe's final phase positive, so
+\[
+ \phi=\gamma A x(t_1)-\gamma A x(t_2)
+      =-\gamma A v(t_2-t_1).
+\]
+The \(x_0\) terms cancel, but velocity remains. Reversing the second physical lobe changes the difference to a sum:
+\(\phi=\gamma A[2x_0+v(t_1+t_2)]\) for the stated time origin.
+It no longer balances stationary spins and does not establish flow compensation. One must solve both zeroth- and first-moment conditions for the chosen pathway.
+\end{solution}
+\begin{solution}{prob:05:radial}
+The geometric estimate requires
+\(N_\theta\geq\lceil\pi\,256/2\rceil=403\) full spokes.
+With 200 spokes the radius satisfying the same local spacing condition is
+\(K_{\mathrm{full}}=200/(\pi L)\).
+Relative to the target \(K=128/L\), this is \(0.49736K\), with nominal resolution
+\(1/(2K_{\mathrm{full}})=\pi L/400\), or \(2.0106\) target pixels.
+This is a coverage estimate for arbitrary objects; support shape, sparsity, gridding, noise and a chosen reconstruction can alter the apparent quality or usable resolution.
+\end{solution}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\begin{solution}{prob:05:epi}
+The off-resonance multiplier is
+\(\ee^{-i2\pi\Delta f t_c}
+ \ee^{-i2\pi k_y\Delta f T_{\mathrm{esp}}/\Delta k_y}\).
+By the Fourier shift theorem the second factor gives
+\(f(y-\Delta y)\), with positive displacement
+\(\Delta y=\Delta f T_{\mathrm{esp}}/\Delta k_y\).
+For \(R=2\), acquired spacing is \(2/0.220\ \mathrm m^{-1}\), giving
+\(\Delta y=6.6\) mm or \(3.84\) reconstructed pixels.
+Reverse traversal makes \(\dd t/\dd k_y\) negative and reverses the shift.
+The reconstruction fills a prescribed grid, but time advances between acquired lines; substituting \(1/L_y\) for their actual separation overestimates this contribution by \(R\).
+\end{solution}
+\begin{solution}{prob:05:nonlinear}
+Set \(u=b(x)\). On a monotone branch,
+\[
+ s(k)=\int \frac{f(x(u))}{|b'(x(u))|}
+             \ee^{-i2\pi ku}\dd u.
+\]
+Consequently inversion yields
+\(g(u)=\sum_{x_i:b(x_i)=u}f(x_i)/|1+2\epsilon x_i/L|\).
+On the closed interval, \(|\epsilon|<1\) ensures a strictly positive derivative bounded away from zero and a nonsingular one-to-one map.
+At \(|\epsilon|=1\) it vanishes at an endpoint; beyond that it vanishes internally and the map folds.
+For an invertible map, recovery is
+\(f(x)=g(b(x))|b'(x)|\), not simply \(g(b(x))\).
+The Jacobian accounts for how physical volume is redistributed in encoding coordinates. A fold mixes branches and cannot be undone by this scalar correction.
+\end{solution}
 
 \section{Signal Formation and Fourier Imaging}
 \label{sec:e:signal-formation-and-fourier-imaging}
 \subsection{Derivations and numerical checks}
+\begin{solution}{prob:06:receive}
+Define \(C(t)=\int(b_{cx}-ib_{cy})m(\vect r,t)\dd^3r\).
+Since \(\Phi=\Re\{C(t)\ee^{-i\omega_0t}\}\), Faraday's law gives complex voltage
+\(V=i\omega_0C-\dot C\).
+The envelope correction is of relative order \(1/(\omega_0T_e)\), provided the leading flux is not canceled by spatial interference.
+At a cancellation, relative error need not be small even if each local envelope is slow.
+In the Fourier limit a single coil yields \(f=c\,m\).
+For any nonzero function \(a(\vect r)\), the pair \(c'=ac,\ m'=m/a\) gives the same product and the same data. Independent calibration or a constraint fixing this gauge is required.
+\end{solution}
+\begin{solution}{prob:06:voxel}
+For a voxel centered at \(x_n\) with width \(\Delta x\),
+\[
+ \int_{x_n-\Delta x/2}^{x_n+\Delta x/2}
+ \ee^{-i2\pi kx}\dd x
+ =\ee^{-i2\pi kx_n}\frac{\sin(\pi k\Delta x)}{\pi k}
+ =\Delta x\,\ee^{-i2\pi kx_n}\sinc(k\Delta x).
+\]
+Independent integration over rectangular coordinate intervals produces the product in \cref{eq:06:voxel}.
+At \(k=1/(2\Delta x)\), the exact amplitude is \(2/\pi=0.63662\) times the point-model value: a \(36.34\%\) reduction relative to that model.
+Dividing out this factor amplifies noise standard deviation by \(\pi/2=1.5708\).
+It corrects an assumed basis response on acquired frequencies; it supplies no information beyond the measured aperture and can be unstable near zeros of the basis transform.
+\end{solution}
+\begin{solution}{prob:06:window}
+For pixel separation \(d=m-n\) modulo \(N\),
+\[
+ \Psi_x(d)=\frac{2\sigma_k^2}{N^2}
+ \sum_j w_j^2\ee^{i2\pi jd/N}.
+\]
+Expand
+\[
+ w_j^2=\frac38-\frac12\cos(2\pi j/N)
+                  +\frac18\cos(4\pi j/N).
+\]
+Discrete orthogonality gives, for \(N>4\),
+\[
+ \Psi_x(d)=\frac{2\sigma_k^2}{N}
+ \left[\frac38\delta_{d,0}
+ -\frac14(\delta_{d,1}+\delta_{d,-1})
+ +\frac1{16}(\delta_{d,2}+\delta_{d,-2})\right].
+\]
+All Kronecker indices are periodic. In this unshifted weight convention the negative neighbor correlations are real; shifting the frequency window changes the corresponding phase factors.
+The complex diagonal variance is \(3\sigma_k^2/(4N)\), while each quadrature variance is half that.
+The point-response peak is \(\sum_jw_j/N=1/2\).
+Doubling the image restores that peak, multiplying covariance by four. Relative to the unwindowed quadrature variance \(\sigma_k^2/N\), the normalized variance is \(3/2\), hence standard deviation increases by \(\sqrt{3/2}\).
+The unnormalized reduction in noise cannot be interpreted without the accompanying signal scaling and resolution change.
+\end{solution}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\begin{solution}{prob:06:partial}
+Modulation gives \(F(k)=A(k-k_0)\). Since \(a\) is real,
+\(F(k_0-q)=F(k_0+q)^*\), so symmetry is centered at \(k_0\), not generally zero.
+For a period \(L\), take \(f_1(x)=1\) and
+\(f_2(x)=1+b\ee^{-i2\pi x/L}\) with \(b\ne0\).
+Their Fourier-series coefficients at all nonnegative indices agree, but the coefficient at \(-1\) differs by \(b\). Both are legitimate complex objects.
+A known phase model rendering the object real, a sufficiently restrictive finite-dimensional prior, or additional measurements can permit completion. Arbitrary complex objects cannot be recovered uniquely from one half of their spectrum.
+\end{solution}
+\begin{solution}{prob:06:distort}
+Combining encoding and off-resonance gives
+\(s(k)=\int f(x)\ee^{-i2\pi k\lambda x}\dd x\), with
+\(\lambda=1+a/(\gammabar G)\).
+For nonzero \(\lambda\), inversion and the delta-function change of variables yield
+\[
+ g(u)=\int f(x)\delta(u-\lambda x)\dd x
+     =\frac{f(u/\lambda)}{|\lambda|}.
+\]
+A point at \(x\) appears at \(u=\lambda x\), displacement
+\(ax/(\gammabar G)\). Compression increases density amplitude; expansion decreases it.
+Negative \(\lambda\) includes orientation reversal but remains invertible in this ideal linear model.
+At \(\lambda=0\), every location has the same encoded frequency and
+\(s(k)=\int f(x)\dd x\); spatial information collapses to one integral.
+For nonzero \(\lambda\), recovery uses
+\(f(x)=|\lambda|g(\lambda x)\).
+The absolute Jacobian is required to preserve integrated signal. Finite sampling, spatially variable maps and noise add further limits.
+\end{solution}
 
 \section{Basic Pulse Sequences}
 \label{sec:e:basic-pulse-sequences}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Advanced Pulse Sequences}
 \label{sec:e:advanced-pulse-sequences}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Contrast and Relaxation}
 \label{sec:e:contrast-and-relaxation}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Diffusion MRI}
 \label{sec:e:diffusion-mri}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Quantitative MRI}
 \label{sec:e:quantitative-mri}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Magnetic Resonance Fingerprinting}
 \label{sec:e:magnetic-resonance-fingerprinting}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Extended Phase Graphs and Signal Pathways}
 \label{sec:e:extended-phase-graphs-and-signal-pathways}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Parallel Imaging}
 \label{sec:e:parallel-imaging}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Non-Cartesian and Accelerated Imaging}
 \label{sec:e:non-cartesian-and-accelerated-imaging}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Reconstruction and Inverse Problems}
 \label{sec:e:reconstruction-and-inverse-problems}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{MRI Hardware}
 \label{sec:e:mri-hardware}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{RF Pulses and Sequence Design}
 \label{sec:e:rf-pulses-and-sequence-design}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Flow, Perfusion and Angiography}
 \label{sec:e:flow-perfusion-and-angiography}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Magnetic Resonance Spectroscopy}
 \label{sec:e:magnetic-resonance-spectroscopy}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Functional MRI}
 \label{sec:e:functional-mri}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Artifacts and Corrections}
 \label{sec:e:artifacts-and-corrections}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Clinical Protocol Physics}
 \label{sec:e:clinical-protocol-physics}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Image Quality and Optimization}
 \label{sec:e:image-quality-and-optimization}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Modern MRI Methods}
 \label{sec:e:modern-mri-methods}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Safety and System Limits}
 \label{sec:e:safety-and-system-limits}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
 
 \section{Integrated Worked Problems}
 \label{sec:e:integrated-worked-problems}
 \subsection{Derivations and numerical checks}
 \subsection{Interpretation, limiting cases and alternative approaches}
+\par\pagebreak[1]
